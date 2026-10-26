@@ -1,0 +1,9 @@
+{
+  "name": "bargad-sahara-web",
+  "version": "1.0.0",
+  "description": "Official Website for Bargad Sahara | बुढ़ापे का सहारा (bargadsahara.com) - 100 Elders, 6000 Years of Wisdom",
+  "private": true,
+  "scripts": {
+    "test": "node scripts/validate-site.js"
+  }
+}
