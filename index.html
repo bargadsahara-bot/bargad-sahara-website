@@ -848,7 +848,7 @@
 </head>
 <body>
 
-  <!-- Master Reusable SVG Seal Logo (Option 1 Locked — Precision Curved Typography) -->
+  <!-- Master Reusable Animated SVG Seal Logo (Option 1 Locked — Precision Curved Typography + Living Banyan Animations) -->
   <svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
     <symbol id="bargad-master-seal" viewBox="0 0 400 400">
       <defs>
@@ -856,24 +856,69 @@
           <stop offset="0%" stop-color="#FFFDF9"/>
           <stop offset="100%" stop-color="#F6F1E2"/>
         </radialGradient>
+        <radialGradient id="sunAuraGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#F4A261" stop-opacity="0.55"/>
+          <stop offset="55%" stop-color="#E9C46A" stop-opacity="0.32"/>
+          <stop offset="100%" stop-color="#E9C46A" stop-opacity="0"/>
+        </radialGradient>
         <path id="seal-arc-top-hi" d="M 62,200 A 138,138 0 1,1 338,200" fill="none"/>
         <path id="seal-arc-bot-en" d="M 57,200 A 143,143 0 0,0 343,200" fill="none"/>
         <path id="seal-arc-bot-sub" d="M 36,200 A 164,164 0 0,0 364,200" fill="none"/>
         <path id="seal-arc-inner-motto" d="M 104,200 A 96,96 0 0,0 296,200" fill="none"/>
       </defs>
       <circle cx="200" cy="200" r="190" fill="url(#khadiGrad)" stroke="#1B4332" stroke-width="10"/>
-      <circle cx="200" cy="200" r="178" fill="none" stroke="#7F4F24" stroke-width="2.2" stroke-dasharray="6,5"/>
+      <circle cx="200" cy="200" r="178" fill="none" stroke="#7F4F24" stroke-width="2.4" stroke-dasharray="7,5">
+        <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="48s" repeatCount="indefinite"/>
+      </circle>
       <circle cx="200" cy="200" r="116" fill="#FFFDF9" stroke="#1B4332" stroke-width="3.5"/>
-      <circle cx="200" cy="200" r="109" fill="none" stroke="#D4A373" stroke-width="1.5"/>
-      <circle cx="200" cy="166" r="58" fill="#E9C46A" opacity="0.24"/>
-      <path d="M114,168 C100,142 122,112 149,117 C161,97 183,90 200,94 C217,90 239,97 251,117 C278,112 300,142 286,168 C292,183 271,192 253,186 C232,194 168,194 147,186 C129,192 108,183 114,168 Z" fill="#1B4332"/>
-      <path d="M129,159 C123,141 141,124 161,126 C174,110 226,110 239,126 C259,124 277,141 271,159 C255,171 145,171 129,159 Z" fill="#2D6A4F"/>
-      <circle cx="200" cy="114" r="5.5" fill="#E9C46A"/>
-      <circle cx="184" cy="121" r="4" fill="#E9C46A"/>
-      <circle cx="216" cy="121" r="4" fill="#E9C46A"/>
-      <line x1="135" y1="178" x2="135" y2="225" stroke="#7F4F24" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="200" cy="200" r="109" fill="none" stroke="#D4A373" stroke-width="1.5" stroke-dasharray="3,3">
+        <animateTransform attributeName="transform" type="rotate" from="360 200 200" to="0 200 200" dur="60s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="200" cy="164" r="64" fill="url(#sunAuraGrad)">
+        <animate attributeName="r" values="56;68;56" dur="4s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="200" cy="166" r="54" fill="#E9C46A" opacity="0.26">
+        <animate attributeName="r" values="52;59;52" dur="4s" repeatCount="indefinite"/>
+      </circle>
+      <g opacity="0.38" stroke="#D4A373" stroke-width="1.6" stroke-linecap="round">
+        <line x1="200" y1="92" x2="200" y2="104"/>
+        <line x1="148" y1="114" x2="157" y2="123"/>
+        <line x1="252" y1="114" x2="243" y2="123"/>
+        <line x1="126" y1="166" x2="138" y2="166"/>
+        <line x1="274" y1="166" x2="262" y2="166"/>
+        <animateTransform attributeName="transform" type="rotate" from="0 200 166" to="360 200 166" dur="36s" repeatCount="indefinite"/>
+      </g>
+      <g>
+        <path d="M114,168 C100,142 122,112 149,117 C161,97 183,90 200,94 C217,90 239,97 251,117 C278,112 300,142 286,168 C292,183 271,192 253,186 C232,194 168,194 147,186 C129,192 108,183 114,168 Z" fill="#1B4332"/>
+        <animateTransform attributeName="transform" type="rotate" values="0 200 185; 1.2 200 185; -0.8 200 185; 0 200 185" dur="5.5s" repeatCount="indefinite"/>
+      </g>
+      <g>
+        <path d="M129,159 C123,141 141,124 161,126 C174,110 226,110 239,126 C259,124 277,141 271,159 C255,171 145,171 129,159 Z" fill="#2D6A4F"/>
+        <circle cx="200" cy="114" r="5.5" fill="#E9C46A">
+          <animate attributeName="r" values="4.8;6.6;4.8" dur="2.6s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="184" cy="121" r="4" fill="#E9C46A">
+          <animate attributeName="r" values="3.5;5.1;3.5" dur="2.6s" begin="0.8s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="216" cy="121" r="4" fill="#E9C46A">
+          <animate attributeName="r" values="3.5;5.1;3.5" dur="2.6s" begin="1.6s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+      <g>
+        <line x1="135" y1="178" x2="135" y2="225" stroke="#7F4F24" stroke-width="2.8" stroke-linecap="round"/>
+        <circle cx="135" cy="225" r="2.2" fill="#E9C46A">
+          <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <animateTransform attributeName="transform" type="rotate" values="0 135 178; 2.8 135 178; 0 135 178" dur="3.8s" repeatCount="indefinite"/>
+      </g>
       <line x1="147" y1="184" x2="147" y2="216" stroke="#7F4F24" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="14,4"/>
-      <line x1="265" y1="178" x2="265" y2="225" stroke="#7F4F24" stroke-width="2.8" stroke-linecap="round"/>
+      <g>
+        <line x1="265" y1="178" x2="265" y2="225" stroke="#7F4F24" stroke-width="2.8" stroke-linecap="round"/>
+        <circle cx="265" cy="225" r="2.2" fill="#E9C46A">
+          <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <animateTransform attributeName="transform" type="rotate" values="0 265 178; -2.8 265 178; 0 265 178" dur="3.8s" repeatCount="indefinite"/>
+      </g>
       <line x1="253" y1="184" x2="253" y2="216" stroke="#7F4F24" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="14,4"/>
       <path d="M165,244 C177,226 187,204 191,173 L200,157 L209,173 C213,204 223,226 235,244" fill="none" stroke="#7F4F24" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M147,233 C165,240 181,226 189,198" fill="none" stroke="#9C6644" stroke-width="6" stroke-linecap="round"/>
@@ -885,8 +930,12 @@
       <text font-size="12.5" font-weight="800" fill="#7F4F24" font-family="Noto Sans Devanagari, Segoe UI, sans-serif" letter-spacing="0.5">
         <textPath href="#seal-arc-inner-motto" startOffset="50%" text-anchor="middle">अनुभव • सम्मान • सहारा</textPath>
       </text>
-      <circle cx="53" cy="200" r="3.5" fill="#D4A373"/>
-      <circle cx="347" cy="200" r="3.5" fill="#D4A373"/>
+      <circle cx="53" cy="200" r="4" fill="#D4A373">
+        <animate attributeName="r" values="3.2;5;3.2" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="347" cy="200" r="4" fill="#D4A373">
+        <animate attributeName="r" values="3.2;5;3.2" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
       <text font-size="25" font-weight="800" fill="#1B4332" font-family="Noto Sans Devanagari, Segoe UI, sans-serif" letter-spacing="1">
         <textPath href="#seal-arc-top-hi" startOffset="50%" text-anchor="middle">• बरगद सहारा •</textPath>
       </text>

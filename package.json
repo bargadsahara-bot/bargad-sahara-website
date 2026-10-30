@@ -1,9 +1,12 @@
 {
-  "name": "bargad-sahara-web",
-  "version": "1.0.0",
-  "description": "Official Website for Bargad Sahara | बुढ़ापे का सहारा (bargadsahara.com) - 100 Elders, 6000 Years of Wisdom",
+  "name": "bargad-sahara-enterprise-web",
+  "version": "2.0.0",
   "private": true,
-  "scripts": {
-    "test": "node scripts/validate-site.js"
+  "description": "Bargad Sahara Official Full-Stack Website & Restricted Admin Portal backed by MongoDB Atlas",
+  "dependencies": {
+    "mongodb": "^6.10.0"
+  },
+  "engines": {
+    "node": ">=18.x"
   }
 }
