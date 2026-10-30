@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>बरगद सहारा — एडमिन कंट्रोल पैनल (Restricted Admin CMS)</title>
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    :root {
+      --bg-canvas: #F4F1EA;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #EAE5D9;
+      --banyan-950: #091E15;
+      --banyan-800: #1B4332;
+      --banyan-700: #2D6A4F;
+      --earth-700: #7F4F24;
+      --gold-500: #E9C46A;
+      --gold-400: #D4A373;
+      --danger: #B91C1C;
+      --text-main: #121C17;
+      --text-muted: #5C6B62;
+      --border-soft: #DCD5C5;
+      --radius-md: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: 'Inter', 'Segoe UI', 'Noto Sans Devanagari', sans-serif;
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    /* Top Admin Header */
+    .admin-header {
+      background: var(--banyan-950);
+      color: #FFFFFF;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 3px solid var(--gold-500);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .admin-brand h1 {
+      font-size: 1.15rem;
+      color: var(--gold-500);
+      font-weight: 800;
+    }
+    .admin-brand p {
+      font-size: 0.75rem;
+      color: #C7D8CF;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.84rem;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      text-decoration: none;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .btn-primary { background: var(--banyan-800); color: #FFFFFF; }
+    .btn-primary:hover { background: var(--banyan-700); }
+    .btn-gold { background: var(--gold-500); color: var(--banyan-950); }
+    .btn-gold:hover { background: #f3ce74; }
+    .btn-danger { background: #FEE2E2; color: var(--danger); border-color: #FCA5A5; }
+    .btn-danger:hover { background: var(--danger); color: #FFFFFF; }
+    .btn-outline { background: transparent; color: #FFFFFF; border-color: rgba(255,255,255,0.3); }
+    .btn-outline-dark { background: #FFFFFF; color: var(--banyan-800); border-color: var(--border-soft); }
+
+    /* Login Gate Card */
+    .login-wrapper {
+      max-width: 460px;
+      margin: 60px auto;
+      padding: 0 20px;
+    }
+    .login-card {
+      background: var(--bg-surface);
+      border-radius: 18px;
+      padding: 32px;
+      border: 2px solid var(--gold-400);
+      box-shadow: 0 16px 40px rgba(9, 30, 21, 0.12);
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.84rem;
+      color: var(--banyan-800);
+      margin-bottom: 5px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border-soft);
+      font-size: 0.92rem;
+      font-family: inherit;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--banyan-800);
+    }
+
+    /* Admin Dashboard Layout */
+    .dashboard-container {
+      max-width: 1320px;
+      margin: 24px auto;
+      padding: 0 24px 60px;
+      display: none;
+    }
+    .dashboard-container.active { display: block; }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .kpi-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-soft);
+      border-left: 5px solid var(--banyan-800);
+      border-radius: 12px;
+      padding: 14px 18px;
+    }
+    .kpi-box strong {
+      display: block;
+      font-size: 1.5rem;
+      color: var(--banyan-800);
+    }
+    .kpi-box span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    .panel-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+
+    .tab-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .tab-btn {
+      background: var(--bg-subtle);
+      color: var(--text-main);
+      border: 1px solid var(--border-soft);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .tab-btn.active {
+      background: var(--banyan-800);
+      color: #FFFFFF;
+      border-color: var(--banyan-800);
+    }
+
+    .item-row {
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      background: #FDFCF9;
+    }
+    .item-row:hover { border-color: var(--gold-400); }
+    .item-thumb {
+      width: 84px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      flex-shrink: 0;
+    }
+
+    .alert-box {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: none;
+    }
+    .alert-error { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; display: block; }
+    .alert-success { background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; display: block; }
+
+    @media (max-width: 980px) {
+      .admin-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP ADMIN HEADER -->
+  <header class="admin-header">
+    <div class="admin-brand">
+      <span style="font-size:1.7rem;">🛡️</span>
+      <div>
+        <h1>बरगद सहारा — एडमिन कंट्रोल पोर्टल (Admin CMS & Database Studio)</h1>
+        <p id="admin-status-subtitle">Restricted Access • केवल अधिकृत एडमिन जीमेल द्वारा लॉगिन</p>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <a href="index.html" class="btn btn-outline">🌐 पब्लिक वेबसाइट देखें (User View)</a>
+      <button type="button" id="logout-btn" class="btn btn-danger" style="display:none;" onclick="window.BargadAdmin.logout()">🚪 लॉगआउट (Logout)</button>
+    </div>
+  </header>
+
+  <!-- 1. RESTRICTED ADMIN LOGIN GATE -->
+  <section id="login-section" class="login-wrapper">
+    <div class="login-card">
+      <div style="text-align:center; margin-bottom:20px;">
+        <div style="font-size:2.4rem; margin-bottom:6px;">🔒</div>
+        <h2 style="color:#1B4332; font-size:1.35rem;">एडमिन पोर्टल लॉगिन</h2>
+        <p style="font-size:0.84rem; color:#5C6B62; margin-top:4px;">
+          केवल अधिकृत जीमेल आईडी (<strong>bargadsahara@gmail.com</strong>) ही वेबसाइट के फोटो, ब्लॉग और कंटेंट को जोड़ या हटा सकते हैं।
+        </p>
+      </div>
+
+      <div id="login-alert"></div>
+
+      <form onsubmit="window.BargadAdmin.handleLogin(event)">
+        <div class="form-group">
+          <label for="admin-email">एडमिन जीमेल आईडी (Authorized Gmail ID) *</label>
+          <input
+            type="email"
+            id="admin-email"
+            class="form-control"
+            placeholder="bargadsahara@gmail.com"
+            value="bargadsahara@gmail.com"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="admin-password">एडमिन पासवर्ड (Password) *</label>
+          <input
+            type="password"
+            id="admin-password"
+            class="form-control"
+            placeholder="एडमिन पासवर्ड दर्ज करें..."
+            required
+          >
+          <small style="display:block; margin-top:4px; color:#5C6B62; font-size:0.75rem;">
+            डिफ़ॉल्ट एडमिन पासवर्ड: <code>Bargad@2026#Admin</code> (आप लॉगिन के बाद इसे बदल सकते हैं)
+          </small>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; padding:11px; font-size:0.95rem; margin-top:6px;">
+          🔑 एडमिन पोर्टल में प्रवेश करें (Sign In with Admin Gmail)
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- 2. AUTHENTICATED ADMIN DASHBOARD (HIDDEN UNTIL LOGGED IN) -->
+  <main id="dashboard-section" class="dashboard-container">
+
+    <!-- KPI Summary Row -->
+    <div class="kpi-row">
+      <div class="kpi-box">
+        <strong id="kpi-photos">0</strong>
+        <span>📸 फोटो गैलरी (Photos)</span>
+      </div>
+      <div class="kpi-box">
+        <strong id="kpi-thoughts">0</strong>
+        <span>🌅 दैनिक सुविचार (Thoughts)</span>
+      </div>
+      <div class="kpi-box">
+        <strong id="kpi-blogs">0</strong>
+        <span>✍️ ब्लॉग्स व लेख (Blogs)</span>
+      </div>
+      <div class="kpi-box">
+        <strong id="kpi-vlogs">0</strong>
+        <span>🎬 वीडियो व्लॉग्स (Vlogs)</span>
+      </div>
+      <div class="kpi-box">
+        <strong id="kpi-elders">0</strong>
+        <span>📖 100 बुजुर्ग डायरी (Elders)</span>
+      </div>
+      <div class="kpi-box" style="border-left-color:#D4A373;">
+        <strong id="kpi-db-mode" style="font-size:0.95rem; margin-top:4px;">Active</strong>
+        <span>🗄️ डेटाबेस इंजन स्टेटस</span>
+      </div>
+    </div>
+
+    <div class="admin-grid">
+
+      <!-- LEFT COLUMN: ADD / EDIT CONTENT FORM -->
+      <div class="panel-card">
+        <h2 id="form-heading" style="color:#1B4332; font-size:1.18rem; margin-bottom:4px;">➕ नया कंटेंट / फोटो जोड़ें (Add Content)</h2>
+        <p style="font-size:0.8rem; color:#5C6B62; margin-bottom:14px;">
+          यहाँ से जोड़ा गया हर फोटो या लेख तुरंत मुख्य वेबसाइट (<code>index.html</code>) और डेटाबेस में लाइव हो जाएगा।
+        </p>
+
+        <div id="editor-alert"></div>
+
+        <form id="admin-content-form" onsubmit="window.BargadAdmin.saveContent(event)">
+          <input type="hidden" id="edit-id" value="">
+
+          <div class="form-group">
+            <label for="content-type">कंटेंट का प्रकार चुनें (Content Type) *</label>
+            <select id="content-type" class="form-control" onchange="window.BargadAdmin.onTypeChange(this.value)" required>
+              <option value="photo">📸 फोटो गैलरी (Upload Photo)</option>
+              <option value="thought">🌅 आज का सुविचार (Daily Thought)</option>
+              <option value="blog">✍️ नया ब्लॉग / लेख (Blog Article)</option>
+              <option value="vlog">🎬 नया वीडियो / व्लॉग (YouTube Vlog)</option>
+              <option value="elder">📖 100 बुजुर्ग — सुनहरी डायरी (Elder Wisdom)</option>
+              <option value="mission">🌳 टॉप अभियान टिकर (Top Mission Ticker)</option>
+            </select>
+          </div>
+
+          <div id="photo-upload-box" class="form-group">
+            <label for="photo-file-input">फोटो अपलोड करें (JPG / PNG / WebP) *</label>
+            <input type="file" id="photo-file-input" accept="image/*" class="form-control" onchange="window.BargadAdmin.previewPhoto(this)">
+            <div id="photo-preview-wrap" style="margin-top:8px; display:none;">
+              <img id="photo-preview-img" src="" alt="Preview" style="width:100%; max-height:170px; object-fit:cover; border-radius:8px; border:1px solid #DCD5C5;">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="field-title">शीर्षक / सुविचार / नाम (Title / Thought) *</label>
+            <input type="text" id="field-title" class="form-control" placeholder="उदा: स्टेशन पर दादाजी से मिलन..." required>
+          </div>
+
+          <div class="form-group">
+            <label for="field-category">श्रेणी / एपिसोड नं. (Category / Episode)</label>
+            <input type="text" id="field-category" class="form-control" placeholder="उदा: तीन पीढ़ियां / एपिसोड #03 / financial">
+          </div>
+
+          <div class="form-group">
+            <label for="field-author">वक्ता / लेखक / क्रमांक (Author / Serial No.)</label>
+            <input type="text" id="field-author" class="form-control" placeholder="उदा: पूज्य पिताजी (87 वर्ष) / #005 / 100">
+          </div>
+
+          <div class="form-group">
+            <label for="field-location">स्थान / तारीख (Location / Date)</label>
+            <input type="text" id="field-location" class="form-control" placeholder="उदा: ग्राम बबियाड़ • चोरगलिया • नोएडा">
+          </div>
+
+          <div id="video-url-box" class="form-group" style="display:none;">
+            <label for="field-video-url">YouTube वीडियो लिंक (Video URL)</label>
+            <input type="url" id="field-video-url" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
+          </div>
+
+          <div class="form-group">
+            <label for="field-summary">संक्षिप्त विवरण / कैप्शन / अंग्रेजी अनुवाद (Summary / Caption)</label>
+            <textarea id="field-summary" rows="2" class="form-control" placeholder="संक्षिप्त विवरण या कैप्शन लिखें..."></textarea>
+          </div>
+
+          <div id="full-content-box" class="form-group">
+            <label for="field-full-content">पूरा लेख / सुनहरी डायरी संदेश (Full Article / Diary Note)</label>
+            <textarea id="field-full-content" rows="4" class="form-control" placeholder="पूरा ब्लॉग लेख या सुनहरी डायरी का हस्तलिखित संदेश यहाँ लिखें..."></textarea>
+          </div>
+
+          <div style="display:flex; gap:8px; margin-top:14px;">
+            <button type="submit" class="btn btn-primary" style="flex:1;">✅ सेव और पब्लिश करें (Save to DB)</button>
+            <button type="button" class="btn btn-outline-dark" onclick="window.BargadAdmin.resetForm()">🔄 रीसेट</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- RIGHT COLUMN: MANAGE / EDIT / DELETE EXISTING ITEMS & DB SETTINGS -->
+      <div class="panel-card">
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="window.BargadAdmin.switchTab('all', this)">सभी कंटेंट (All)</button>
+          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('photo', this)">📸 फोटोज (Photos)</button>
+          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('thought', this)">🌅 सुविचार (Thoughts)</button>
+          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('blog', this)">✍️ ब्लॉग्स (Blogs)</button>
+          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('vlog', this)">🎬 व्लॉग्स (Vlogs)</button>
+          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('elder', this)">📖 100 बुजुर्ग (Elders)</button>
+          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('mission', this)">🌳 टिकर (Ticker)</button>
+          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('database', this)">🍃 MongoDB Atlas कनेक्शन</button>
+        </div>
+
+        <!-- Content List View -->
+        <div id="admin-items-list"></div>
+
+        <!-- MongoDB Atlas Configuration Panel -->
+        <div id="database-settings-panel" style="display:none;">
+          <h3 style="color:#1B4332; margin-bottom:8px;">🍃 MongoDB Atlas (Free Tier Cluster) लाइव कनेक्शन व बैकअप</h3>
+          <p style="font-size:0.86rem; color:#5C6B62; margin-bottom:14px;">
+            आपका क्लस्टर <code>bargadsahara.iajmrj2.mongodb.net</code> और पासवर्ड (<code>w6NLFwRhv2Oi6mo1</code>) पहले से ही जोड़ा जा चुका है! बस नीचे अपना <strong>Database Username (<code>&lt;db_username&gt;</code>)</strong> जांचें:
+          </p>
+
+          <form onsubmit="window.BargadAdmin.saveDbConfig(event)" style="background:#FAF8F4; padding:16px; border-radius:10px; border:1px solid #DCD5C5; margin-bottom:18px;">
+            <div class="form-group">
+              <label>MongoDB Database Username (<code>bargadsahara_db_user</code> लॉक हो चुका है) *</label>
+              <input type="text" id="mongo-user" class="form-control" placeholder="bargadsahara_db_user" value="bargadsahara_db_user" required oninput="window.BargadAdmin.updateUriPreview()">
+            </div>
+            <div class="form-group">
+              <label>MongoDB Database Password (आपका पासवर्ड प्री-फिल्ड है) *</label>
+              <input type="text" id="mongo-pass" class="form-control" value="w6NLFwRhv2Oi6mo1" required oninput="window.BargadAdmin.updateUriPreview()">
+            </div>
+            <div class="form-group">
+              <label>आपकी तैयार MongoDB Connection String (Vercel <code>MONGODB_URI</code> के लिए)</label>
+              <input type="text" id="mongo-uri-preview" class="form-control" style="font-family:monospace; font-size:0.8rem; background:#EAE5D9;" readonly>
+            </div>
+            <button type="submit" class="btn btn-primary">🍃 MongoDB Atlas सेटिंग्स सेव और कनेक्ट करें</button>
+          </form>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-gold" onclick="window.BargadAdmin.exportBackupJson()">⬇️ पूरा डेटाबेस बैकअप डाउनलोड करें (.JSON)</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script src="assets/js/bargad-store.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      function escapeHTML(str) {
+        if (str === null || str === undefined) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      let allItems = [];
+      let activeTab = "all";
+      let currentImageData = "";
+
+      function showAlert(elId, msg, isError = false) {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        el.className = "alert-box " + (isError ? "alert-error" : "alert-success");
+        el.textContent = msg;
+        setTimeout(() => {
+          el.className = "alert-box";
+        }, 5000);
+      }
+
+      async function refreshDashboard() {
+        const session = window.BargadStore.getAdminSession();
+        const loginSec = document.getElementById("login-section");
+        const dashSec = document.getElementById("dashboard-section");
+        const logoutBtn = document.getElementById("logout-btn");
+        const sub = document.getElementById("admin-status-subtitle");
+
+        if (!session) {
+          loginSec.style.display = "block";
+          dashSec.classList.remove("active");
+          logoutBtn.style.display = "none";
+          sub.textContent = "Restricted Access • केवल अधिकृत एडमिन जीमेल द्वारा लॉगिन";
+          return;
+        }
+
+        loginSec.style.display = "none";
+        dashSec.classList.add("active");
+        logoutBtn.style.display = "inline-flex";
+        sub.textContent = `Logged in as: ${session.email} (${session.role})`;
+
+        const res = await window.BargadStore.fetchAllContent();
+        allItems = res.items || [];
+
+        document.getElementById("kpi-photos").textContent = allItems.filter(x => x.content_type === "photo").length;
+        document.getElementById("kpi-thoughts").textContent = allItems.filter(x => x.content_type === "thought").length;
+        document.getElementById("kpi-blogs").textContent = allItems.filter(x => x.content_type === "blog").length;
+        document.getElementById("kpi-vlogs").textContent = allItems.filter(x => x.content_type === "vlog").length;
+        document.getElementById("kpi-elders").textContent = allItems.filter(x => x.content_type === "elder").length;
+        document.getElementById("kpi-db-mode").textContent = res.dbSource || "Hybrid DB";
+
+        const cfg = window.BargadStore.getMongoSettings();
+        document.getElementById("mongo-user").value = cfg.dbUser || "bargadsahara_db_user";
+        document.getElementById("mongo-pass").value = cfg.dbPass || "w6NLFwRhv2Oi6mo1";
+        document.getElementById("mongo-uri-preview").value = cfg.uri || "";
+
+        renderItemsList();
+      }
+
+      function renderItemsList() {
+        const listEl = document.getElementById("admin-items-list");
+        const dbPanel = document.getElementById("database-settings-panel");
+
+        if (activeTab === "database") {
+          listEl.style.display = "none";
+          dbPanel.style.display = "block";
+          return;
+        }
+
+        listEl.style.display = "block";
+        dbPanel.style.display = "none";
+
+        const filtered = activeTab === "all"
+          ? allItems
+          : allItems.filter(x => x.content_type === activeTab);
+
+        if (!filtered.length) {
+          listEl.innerHTML = `<p style="padding:20px; color:#5C6B62; text-align:center;">इस श्रेणी में अभी कोई कंटेंट नहीं है। बाईं ओर के फॉर्म से नया कंटेंट जोड़ें।</p>`;
+          return;
+        }
+
+        const typeBadges = {
+          photo: "📸 फोटो",
+          thought: "🌅 सुविचार",
+          blog: "✍️ ब्लॉग",
+          vlog: "🎬 व्लॉग",
+          elder: "📖 100 बुजुर्ग",
+          mission: "🌳 टिकर"
+        };
+
+        listEl.innerHTML = filtered.map(item => `
+          <div class="item-row">
+            <div style="display:flex; gap:14px; align-items:flex-start; flex:1;">
+              ${item.image_data ? `<img src="${item.image_data}" class="item-thumb" alt="thumb">` : ""}
+              <div>
+                <div style="font-size:0.74rem; font-weight:800; color:#7F4F24; margin-bottom:3px;">
+                  [${escapeHTML(typeBadges[item.content_type] || item.content_type)}]
+                  ${item.category ? " • " + escapeHTML(item.category) : ""}
+                  ${item.location ? " • 📍 " + escapeHTML(item.location) : ""}
+                </div>
+                <div style="font-weight:800; color:#1B4332; font-size:0.98rem; margin-bottom:4px;">
+                  ${escapeHTML(item.title)}
+                </div>
+                ${item.summary ? `<div style="font-size:0.84rem; color:#5C6B62;">${escapeHTML(item.summary)}</div>` : ""}
+              </div>
+            </div>
+            <div style="display:flex; gap:6px; flex-shrink:0;">
+              <button type="button" class="btn btn-outline-dark" style="padding:5px 10px; font-size:0.76rem;" onclick="window.BargadAdmin.editItem('${escapeHTML(item.id)}')">✏️ एडिट</button>
+              <button type="button" class="btn btn-danger" style="padding:5px 10px; font-size:0.76rem;" onclick="window.BargadAdmin.deleteItem('${escapeHTML(item.id)}')">🗑️ हटाएं</button>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      window.BargadAdmin = {
+        handleLogin: async function (e) {
+          e.preventDefault();
+          const email = document.getElementById("admin-email").value.trim();
+          const password = document.getElementById("admin-password").value;
+          const res = await window.BargadStore.loginAdmin({ email, password });
+          if (!res.ok) {
+            showAlert("login-alert", res.error || "लॉगिन विफल!", true);
+            return;
+          }
+          refreshDashboard();
+        },
+
+        logout: function () {
+          window.BargadStore.setAdminSession(null);
+          refreshDashboard();
+        },
+
+        onTypeChange: function (type) {
+          document.getElementById("photo-upload-box").style.display =
+            (type === "photo" || type === "blog") ? "block" : "none";
+          document.getElementById("video-url-box").style.display =
+            (type === "vlog") ? "block" : "none";
+        },
+
+        previewPhoto: async function (input) {
+          if (!input.files || !input.files[0]) return;
+          const compressed = await window.BargadStore.compressImageFile(input.files[0]);
+          currentImageData = compressed;
+          const wrap = document.getElementById("photo-preview-wrap");
+          const img = document.getElementById("photo-preview-img");
+          img.src = compressed;
+          wrap.style.display = "block";
+        },
+
+        saveContent: async function (e) {
+          e.preventDefault();
+          try {
+            const id = document.getElementById("edit-id").value || `BS-${Date.now()}`;
+            const content_type = document.getElementById("content-type").value;
+            const title = document.getElementById("field-title").value.trim();
+            const category = document.getElementById("field-category").value.trim();
+            const author = document.getElementById("field-author").value.trim();
+            const location = document.getElementById("field-location").value.trim();
+            const video_url = document.getElementById("field-video-url").value.trim();
+            const summary = document.getElementById("field-summary").value.trim();
+            const full_content = document.getElementById("field-full-content").value.trim();
+
+            await window.BargadStore.adminSaveItem({
+              id,
+              content_type,
+              title,
+              category,
+              author,
+              location,
+              video_url,
+              summary,
+              full_content,
+              image_data: currentImageData,
+            });
+
+            showAlert("editor-alert", "✅ सफलतापूर्वक डेटाबेस में सेव और वेबसाइट पर लाइव हो गया!");
+            this.resetForm();
+            await refreshDashboard();
+          } catch (err) {
+            showAlert("editor-alert", err.message, true);
+          }
+        },
+
+        editItem: function (id) {
+          const item = allItems.find(x => x.id === id);
+          if (!item) return;
+          document.getElementById("form-heading").textContent = "✏️ कंटेंट एडिट करें (Edit Item)";
+          document.getElementById("edit-id").value = item.id;
+          document.getElementById("content-type").value = item.content_type;
+          this.onTypeChange(item.content_type);
+          document.getElementById("field-title").value = item.title || "";
+          document.getElementById("field-category").value = item.category || "";
+          document.getElementById("field-author").value = item.author || "";
+          document.getElementById("field-location").value = item.location || "";
+          document.getElementById("field-video-url").value = item.video_url || "";
+          document.getElementById("field-summary").value = item.summary || "";
+          document.getElementById("field-full-content").value = item.full_content || "";
+          currentImageData = item.image_data || "";
+
+          const wrap = document.getElementById("photo-preview-wrap");
+          const img = document.getElementById("photo-preview-img");
+          if (currentImageData) {
+            img.src = currentImageData;
+            wrap.style.display = "block";
+          } else {
+            wrap.style.display = "none";
+          }
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        },
+
+        deleteItem: async function (id) {
+          if (!confirm("क्या आप वाकई इस कंटेंट/फोटो को वेबसाइट से हटाना चाहते हैं?")) return;
+          await window.BargadStore.adminDeleteItem(id);
+          await refreshDashboard();
+        },
+
+        resetForm: function () {
+          document.getElementById("form-heading").textContent = "➕ नया कंटेंट / फोटो जोड़ें (Add Content)";
+          document.getElementById("edit-id").value = "";
+          document.getElementById("admin-content-form").reset();
+          currentImageData = "";
+          document.getElementById("photo-preview-wrap").style.display = "none";
+          this.onTypeChange(document.getElementById("content-type").value);
+        },
+
+        switchTab: function (tab, btnEl) {
+          activeTab = tab;
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          if (btnEl) btnEl.classList.add("active");
+          renderItemsList();
+        },
+
+        updateUriPreview: function () {
+          const u = (document.getElementById("mongo-user").value || "bargadsahara_db_user").trim();
+          const p = (document.getElementById("mongo-pass").value || "w6NLFwRhv2Oi6mo1").trim();
+          document.getElementById("mongo-uri-preview").value =
+            `mongodb+srv://${encodeURIComponent(u)}:${encodeURIComponent(p)}@bargadsahara.iajmrj2.mongodb.net/bargadsahara_db?compressors=zlib&retryWrites=true&w=majority&appName=bargadsahara`;
+        },
+
+        saveDbConfig: function (e) {
+          e.preventDefault();
+          const dbUser = document.getElementById("mongo-user").value.trim();
+          const dbPass = document.getElementById("mongo-pass").value.trim();
+          window.BargadStore.saveMongoSettings({ dbUser, dbPass });
+          alert("✅ MongoDB Atlas कनेक्शन सेटिंग्स सेव हो गईं!");
+          refreshDashboard();
+        },
+
+        exportBackupJson: function () {
+          const blob = new Blob([JSON.stringify(allItems, null, 2)], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `bargad-sahara-db-backup-${new Date().toISOString().slice(0,10)}.json`;
+          a.click();
+        }
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        window.BargadAdmin.onTypeChange("photo");
+        refreshDashboard();
+      });
+    })();
+  </script>
+</body>
+</html>

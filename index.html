@@ -41,15 +41,6 @@
   }
   </script>
 
-  <!-- ========================================================================
-       A++ ENTERPRISE DESIGN SYSTEM (Approved 4-Page Wireframe Architecture)
-       - Page 1: Single-Screen / Zero-Scroll Executive Front Page
-       - Page 2: 6,000 Years Wisdom & Sunehri Diary Explorer
-       - Page 3: Vlogs, Blogs & Database Photo Gallery Studio
-       - Page 4: Birthplace Babiyar Roots & Bargad Sahara Trust
-       - Top Bar: Bargad Sahara Small-Font Mission Ticker
-       - Bottom Bar: Live National & World News Ticker (DD / BBC / India RSS)
-       ======================================================================== -->
   <style>
     :root {
       --bg-canvas: #FAF8F4;
@@ -85,7 +76,7 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      padding-bottom: 36px; /* Space for fixed bottom live news bar */
+      padding-bottom: 36px;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -195,7 +186,6 @@
       letter-spacing: 0.4px;
     }
 
-    /* 4-Page Enterprise Navigation Tabs */
     .page-nav {
       display: flex;
       align-items: center;
@@ -256,7 +246,7 @@
     .btn-outline { background: transparent; color: var(--banyan-800); border-color: var(--border-med); }
     .btn-outline:hover { border-color: var(--banyan-800); background: var(--bg-subtle); }
 
-    /* 3. MAIN PAGE VIEWPORT (Single-Screen Front Page & Dedicated Pages) */
+    /* 3. MAIN PAGE VIEWPORT */
     .viewport-container {
       max-width: 1320px;
       width: 100%;
@@ -271,15 +261,12 @@
       display: none;
       animation: pageFade 0.22s ease-out;
     }
-    .app-page.active {
-      display: block;
-    }
+    .app-page.active { display: block; }
     @keyframes pageFade {
       from { opacity: 0; transform: translateY(5px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* PAGE 1: ZERO-SCROLL / SINGLE-SCREEN WOW FRONT PAGE */
     .frontpage-grid {
       display: grid;
       grid-template-columns: 7fr 5fr;
@@ -327,7 +314,6 @@
       max-width: 640px;
     }
 
-    /* Google-Style Search Bar inside Hero Panel */
     .hero-search-box {
       display: flex;
       align-items: center;
@@ -359,7 +345,6 @@
       flex-shrink: 0;
     }
 
-    /* 3 Interactive Pillar Cards inside Hero */
     .hero-pillars-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -393,7 +378,6 @@
       color: #D7E5DE;
     }
 
-    /* Right Column on Page 1 (Seal Banner + Today's Wisdom + Latest Episode) */
     .frontpage-right-stack {
       display: flex;
       flex-direction: column;
@@ -422,7 +406,6 @@
       gap: 16px;
     }
 
-    /* Secondary Pages (Page 2, Page 3, Page 4) Common Styles */
     .page-header-bar {
       display: flex;
       align-items: flex-end;
@@ -513,7 +496,7 @@
       border-color: var(--banyan-800);
     }
 
-    /* 4. BOTTOM BAR: REAL LIVE NEWS CHANNEL TICKER (DD National / BBC Hindi / PIB RSS) */
+    /* 4. BOTTOM BAR: REAL LIVE NEWS CHANNEL TICKER */
     .bottom-news-bar {
       position: fixed;
       bottom: 0;
@@ -586,7 +569,6 @@
       z-index: 2;
     }
 
-    /* Modals */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -624,16 +606,6 @@
       cursor: pointer;
       font-weight: bold;
     }
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-weight: 700; font-size: 0.84rem; color: var(--banyan-800); margin-bottom: 4px; }
-    .form-control {
-      width: 100%;
-      padding: 9px 12px;
-      border-radius: var(--radius-sm);
-      border: 1.5px solid var(--border-med);
-      font-family: inherit;
-      font-size: 0.9rem;
-    }
 
     @media (max-width: 1024px) {
       .frontpage-grid { grid-template-columns: 1fr; }
@@ -653,87 +625,66 @@
           <stop offset="0%" stop-color="#FFFDF9"/>
           <stop offset="100%" stop-color="#F6F1E2"/>
         </radialGradient>
-        <!-- 1. Top Half-Circle Arc for "• बरगद सहारा •" (Clockwise Left to Right, Baseline R = 138) -->
         <path id="seal-arc-top-hi" d="M 62,200 A 138,138 0 1,1 338,200" fill="none"/>
-        <!-- 2. Bottom Concentric Arc 1 for "BARGAD SAHARA" (Counter-Clockwise Left to Right, Baseline R = 143) -->
         <path id="seal-arc-bot-en" d="M 57,200 A 143,143 0 0,0 343,200" fill="none"/>
-        <!-- 3. Bottom Concentric Arc 2 for "• बुढ़ापे का सहारा •" (Counter-Clockwise Left to Right, Baseline R = 164) -->
         <path id="seal-arc-bot-sub" d="M 36,200 A 164,164 0 0,0 364,200" fill="none"/>
-        <!-- 4. Inner Circle Gentle Bottom Arc for "अनुभव • सम्मान • सहारा" (Counter-Clockwise, Baseline R = 96) -->
         <path id="seal-arc-inner-motto" d="M 104,200 A 96,96 0 0,0 296,200" fill="none"/>
       </defs>
-      <!-- Outer Royal Seal Border (r=190) -->
       <circle cx="200" cy="200" r="190" fill="url(#khadiGrad)" stroke="#1B4332" stroke-width="10"/>
-      <!-- Outer Dotted Heritage Ring (r=178) — Completely Free & Untouched -->
       <circle cx="200" cy="200" r="178" fill="none" stroke="#7F4F24" stroke-width="2.2" stroke-dasharray="6,5"/>
-      <!-- Inner Seal Circle (r=116) & Inner Fine Gold Ring (r=109) — Creating 62px White Space Band -->
       <circle cx="200" cy="200" r="116" fill="#FFFDF9" stroke="#1B4332" stroke-width="3.5"/>
       <circle cx="200" cy="200" r="109" fill="none" stroke="#D4A373" stroke-width="1.5"/>
-      <!-- Warm Sun Aura & Banyan Canopy -->
       <circle cx="200" cy="166" r="58" fill="#E9C46A" opacity="0.24"/>
       <path d="M114,168 C100,142 122,112 149,117 C161,97 183,90 200,94 C217,90 239,97 251,117 C278,112 300,142 286,168 C292,183 271,192 253,186 C232,194 168,194 147,186 C129,192 108,183 114,168 Z" fill="#1B4332"/>
       <path d="M129,159 C123,141 141,124 161,126 C174,110 226,110 239,126 C259,124 277,141 271,159 C255,171 145,171 129,159 Z" fill="#2D6A4F"/>
-      <!-- 3 Golden Buds at Crown (3 Generations) -->
       <circle cx="200" cy="114" r="5.5" fill="#E9C46A"/>
       <circle cx="184" cy="121" r="4" fill="#E9C46A"/>
       <circle cx="216" cy="121" r="4" fill="#E9C46A"/>
-      <!-- Hanging Aerial Prop Roots -->
       <line x1="135" y1="178" x2="135" y2="225" stroke="#7F4F24" stroke-width="2.8" stroke-linecap="round"/>
       <line x1="147" y1="184" x2="147" y2="216" stroke="#7F4F24" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="14,4"/>
       <line x1="265" y1="178" x2="265" y2="225" stroke="#7F4F24" stroke-width="2.8" stroke-linecap="round"/>
       <line x1="253" y1="184" x2="253" y2="216" stroke="#7F4F24" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="14,4"/>
-      <!-- Two Caring Hands Forming the Trunk -->
       <path d="M165,244 C177,226 187,204 191,173 L200,157 L209,173 C213,204 223,226 235,244" fill="none" stroke="#7F4F24" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M147,233 C165,240 181,226 189,198" fill="none" stroke="#9C6644" stroke-width="6" stroke-linecap="round"/>
       <path d="M253,233 C235,240 219,226 211,198" fill="none" stroke="#9C6644" stroke-width="6" stroke-linecap="round"/>
-      <!-- Deep Ancestral Roots (ग्राम बबियाड़ की जड़ें) -->
       <path d="M129,248 Q200,237 271,248" fill="none" stroke="#1B4332" stroke-width="4" stroke-linecap="round"/>
       <path d="M186,245 Q168,257 150,261" fill="none" stroke="#7F4F24" stroke-width="3" stroke-linecap="round"/>
       <path d="M200,243 L200,263" fill="none" stroke="#7F4F24" stroke-width="3" stroke-linecap="round"/>
       <path d="M214,245 Q232,257 250,261" fill="none" stroke="#7F4F24" stroke-width="3" stroke-linecap="round"/>
-      <!-- Inner Curved Motto (अनुभव • सम्मान • सहारा) -->
       <text font-size="12.5" font-weight="800" fill="#7F4F24" font-family="Noto Sans Devanagari, Segoe UI, sans-serif" letter-spacing="0.5">
         <textPath href="#seal-arc-inner-motto" startOffset="50%" text-anchor="middle">अनुभव • सम्मान • सहारा</textPath>
       </text>
-      <!-- Side Heritage Dots in White Band -->
       <circle cx="53" cy="200" r="3.5" fill="#D4A373"/>
       <circle cx="347" cy="200" r="3.5" fill="#D4A373"/>
-      <!-- 1. TOP CURVED HINDI TITLE (• बरगद सहारा •) -->
       <text font-size="25" font-weight="800" fill="#1B4332" font-family="Noto Sans Devanagari, Segoe UI, sans-serif" letter-spacing="1">
         <textPath href="#seal-arc-top-hi" startOffset="50%" text-anchor="middle">• बरगद सहारा •</textPath>
       </text>
-      <!-- 2. BOTTOM CURVED ENGLISH TITLE (BARGAD SAHARA) -->
       <text font-size="15.5" font-weight="800" fill="#1B4332" font-family="Segoe UI, sans-serif" letter-spacing="2.5">
         <textPath href="#seal-arc-bot-en" startOffset="50%" text-anchor="middle">BARGAD SAHARA</textPath>
       </text>
-      <!-- 3. BOTTOM CURVED HINDI SUBTITLE (• बुढ़ापे का सहारा •) -->
       <text font-size="13" font-weight="800" fill="#7F4F24" font-family="Noto Sans Devanagari, Segoe UI, sans-serif" letter-spacing="1">
         <textPath href="#seal-arc-bot-sub" startOffset="50%" text-anchor="middle">• बुढ़ापे का सहारा •</textPath>
       </text>
     </symbol>
   </svg>
 
-  <!-- ========================================================================
-       1. TOP BAR: BARGAD SAHARA'S OWN MISSION TICKER (Small Crisp Font)
-       ======================================================================== -->
+  <!-- 1. TOP BAR: BARGAD SAHARA MISSION TICKER -->
   <div class="top-mission-bar" role="region" aria-label="बरगद सहारा अभियान टिकर">
     <div class="mission-badge">🌳 बरगद सहारा अभियान</div>
     <div class="marquee-wrap">
       <div id="top-mission-track" class="marquee-track-top"></div>
     </div>
     <div class="top-controls">
-      <button type="button" class="ctrl-btn" onclick="window.BargadApp.setFontScale(0.95)" title="छोटा फॉन्ट">A-</button>
-      <button type="button" class="ctrl-btn" onclick="window.BargadApp.setFontScale(1)" title="सामान्य फॉन्ट">A</button>
-      <button type="button" class="ctrl-btn" onclick="window.BargadApp.setFontScale(1.12)" title="बुजुर्गों के लिए बड़ा फॉन्ट">A+</button>
+      <button type="button" class="ctrl-btn" onclick="window.BargadPublicApp.setFontScale(0.95)" title="छोटा फॉन्ट">A-</button>
+      <button type="button" class="ctrl-btn" onclick="window.BargadPublicApp.setFontScale(1)" title="सामान्य फॉन्ट">A</button>
+      <button type="button" class="ctrl-btn" onclick="window.BargadPublicApp.setFontScale(1.12)" title="बुजुर्गों के लिए बड़ा फॉन्ट">A+</button>
     </div>
   </div>
 
-  <!-- ========================================================================
-       2. CLEAN ENTERPRISE NAVIGATION HEADER (4 Pages)
-       ======================================================================== -->
+  <!-- 2. CLEAN ENTERPRISE NAVIGATION HEADER (PUBLIC USER VIEW — READ ONLY) -->
   <header class="site-header">
     <div class="nav-container">
-      <a onclick="window.BargadApp.showPage(1)" class="brand-link">
+      <a onclick="window.BargadPublicApp.showPage(1)" class="brand-link">
         <svg class="brand-logo-svg" role="img" aria-label="बरगद सहारा आधिकारिक लोगो">
           <use href="#bargad-master-seal"></use>
         </svg>
@@ -743,33 +694,27 @@
         </div>
       </a>
 
-      <!-- Approved 4-Page Navigation -->
       <nav class="page-nav" aria-label="मुख्य पृष्ठ नेविगेशन">
-        <button type="button" class="page-nav-btn active" data-page="1" onclick="window.BargadApp.showPage(1)">मुख्य पृष्ठ (Home)</button>
-        <button type="button" class="page-nav-btn" data-page="2" onclick="window.BargadApp.showPage(2)">📖 6,000 साल का अनुभव</button>
-        <button type="button" class="page-nav-btn" data-page="3" onclick="window.BargadApp.showPage(3)">🎬 व्लॉग्स, ब्लॉग्स व गैलरी</button>
-        <button type="button" class="page-nav-btn" data-page="4" onclick="window.BargadApp.showPage(4)">🏔️ बबियाड़ की जड़ें व ट्रस्ट</button>
+        <button type="button" class="page-nav-btn active" data-page="1" onclick="window.BargadPublicApp.showPage(1)">मुख्य पृष्ठ (Home)</button>
+        <button type="button" class="page-nav-btn" data-page="2" onclick="window.BargadPublicApp.showPage(2)">📖 6,000 साल का अनुभव</button>
+        <button type="button" class="page-nav-btn" data-page="3" onclick="window.BargadPublicApp.showPage(3)">🎬 व्लॉग्स, ब्लॉग्स व गैलरी</button>
+        <button type="button" class="page-nav-btn" data-page="4" onclick="window.BargadPublicApp.showPage(4)">🏔️ बबियाड़ की जड़ें व ट्रस्ट</button>
       </nav>
 
       <div class="header-actions">
-        <button type="button" class="btn btn-gold" onclick="window.BargadApp.openPublisherModal()">➕ फोटो / पोस्ट अपडेट करें</button>
+        <a href="admin.html" id="header-admin-btn" class="btn btn-outline" title="केवल अधिकृत एडमिन जीमेल लॉगिन">🔒 एडमिन पोर्टल (Admin)</a>
         <a href="https://www.youtube.com/@BargadSahara" target="_blank" rel="noopener noreferrer" class="btn btn-primary">▶ @BargadSahara</a>
       </div>
     </div>
   </header>
 
-  <!-- ========================================================================
-       3. 4-PAGE ENTERPRISE VIEWPORT
-       ======================================================================== -->
+  <!-- 3. 4-PAGE PUBLIC USER VIEWPORT (READ-ONLY) -->
   <main class="viewport-container">
 
-    <!-- ======================================================================
-         PAGE 1: ZERO-SCROLL / SINGLE-SCREEN WOW FRONT PAGE
-         ====================================================================== -->
+    <!-- PAGE 1: ZERO-SCROLL EXECUTIVE FRONT PAGE -->
     <section id="page-1" class="app-page active">
       <div class="frontpage-grid">
 
-        <!-- Left 7 Cols: High-Impact Brand Hook + Google Search + 3 Interactive Pillars -->
         <div class="hero-showcase-panel">
           <div>
             <div class="roots-badge">
@@ -782,8 +727,7 @@
               87 वर्षीय रिटायर्ड शिक्षक दादाजी, 80 वर्षीय ईजा, 44 वर्षीय पिता और 10 वर्षीय पोते (20 साल पुराने कैमरे के साथ) का एक आत्मीय अभियान—जहाँ बुजुर्गों के जीवन-अनुभव, कम आमदनी में बचत के सूत्र और 'सुनहरी डायरी' के हस्तलिखित सबक सहेजे जाते हैं।
             </p>
 
-            <!-- Sleek Google-Style Search Bar -->
-            <form class="hero-search-box" onsubmit="window.BargadApp.globalSearch(event)" role="search">
+            <form class="hero-search-box" onsubmit="window.BargadPublicApp.globalSearch(event)" role="search">
               <input
                 type="search"
                 id="global-search-input"
@@ -794,27 +738,23 @@
             </form>
           </div>
 
-          <!-- 3 Compact Interactive KPI Pillars -->
           <div class="hero-pillars-grid">
-            <button type="button" class="pillar-btn-card" onclick="window.BargadApp.showPage(2)">
+            <button type="button" class="pillar-btn-card" onclick="window.BargadPublicApp.showPage(2)">
               <strong>📖 सुनहरी डायरी</strong>
               <span>6,000 वर्ष का अनुभव कोष →</span>
             </button>
-            <button type="button" class="pillar-btn-card" onclick="window.BargadApp.showPage(3)">
+            <button type="button" class="pillar-btn-card" onclick="window.BargadPublicApp.showPage(3)">
               <strong>🎬 व्लॉग्स, ब्लॉग व फोटो</strong>
               <span>एपिसोड लॉग एवं गैलरी →</span>
             </button>
-            <button type="button" class="pillar-btn-card" onclick="window.BargadApp.showPage(4)">
+            <button type="button" class="pillar-btn-card" onclick="window.BargadPublicApp.showPage(4)">
               <strong>🏛️ बबियाड़ व ट्रस्ट</strong>
               <span>जड़ें एवं सेवा प्रकल्प →</span>
             </button>
           </div>
         </div>
 
-        <!-- Right 5 Cols: Official Seal + Today's Thought + Latest Episode -->
         <div class="frontpage-right-stack">
-
-          <!-- Compact Official Seal & Social Strip Card -->
           <div class="spot-card spot-card-seal">
             <svg style="width:76px; height:76px; flex-shrink:0;" role="img" aria-label="बरगद सहारा सील">
               <use href="#bargad-master-seal"></use>
@@ -830,20 +770,14 @@
             </div>
           </div>
 
-          <!-- Today's Featured Thought Card -->
           <div id="front-thought-card" class="spot-card spot-card-thought"></div>
-
-          <!-- Latest Episode Spotlight Card -->
           <div id="front-vlog-card" class="spot-card spot-card-vlog"></div>
-
         </div>
 
       </div>
     </section>
 
-    <!-- ======================================================================
-         PAGE 2: 6,000 YEARS WISDOM & SUNEHRI DIARY EXPLORER
-         ====================================================================== -->
+    <!-- PAGE 2: 6,000 YEARS WISDOM & SUNEHRI DIARY EXPLORER -->
     <section id="page-2" class="app-page">
       <div class="page-header-bar">
         <div>
@@ -852,16 +786,15 @@
         </div>
         <div style="display:flex; gap:8px;">
           <a href="Sunehri_Diary_Page_Template.html" target="_blank" class="btn btn-outline">🖨️ सुनहरी डायरी प्रिंट पन्ना</a>
-          <button type="button" class="btn btn-primary" onclick="window.BargadApp.openPublisherModal('thought')">➕ नया सुविचार / अनुभव जोड़ें</button>
         </div>
       </div>
 
       <div class="filter-bar">
-        <button class="filter-btn active" onclick="window.BargadApp.filterElders('all', this)">सभी अनुभव (All)</button>
-        <button class="filter-btn" onclick="window.BargadApp.filterElders('financial', this)">💰 बचत और आर्थिक अनुशासन</button>
-        <button class="filter-btn" onclick="window.BargadApp.filterElders('lifestyle', this)">🏡 सादगी और गृहस्थी</button>
-        <button class="filter-btn" onclick="window.BargadApp.filterElders('family', this)">🤝 संयुक्त परिवार और भाईचारा</button>
-        <button class="filter-btn" onclick="window.BargadApp.filterElders('health', this)">🌿 सुबह का व्यायाम और सेहत</button>
+        <button class="filter-btn active" onclick="window.BargadPublicApp.filterElders('all', this)">सभी अनुभव (All)</button>
+        <button class="filter-btn" onclick="window.BargadPublicApp.filterElders('financial', this)">💰 बचत और आर्थिक अनुशासन</button>
+        <button class="filter-btn" onclick="window.BargadPublicApp.filterElders('lifestyle', this)">🏡 सादगी और गृहस्थी</button>
+        <button class="filter-btn" onclick="window.BargadPublicApp.filterElders('family', this)">🤝 संयुक्त परिवार और भाईचारा</button>
+        <button class="filter-btn" onclick="window.BargadPublicApp.filterElders('health', this)">🌿 सुबह का व्यायाम और सेहत</button>
       </div>
 
       <div id="elders-archive-grid" class="grid-2" style="margin-bottom:28px;"></div>
@@ -875,16 +808,14 @@
       <div id="daily-thoughts-grid" class="grid-3"></div>
     </section>
 
-    <!-- ======================================================================
-         PAGE 3: VLOGS, BLOGS & DATABASE PHOTO GALLERY STUDIO
-         ====================================================================== -->
+    <!-- PAGE 3: VLOGS, BLOGS & PHOTO GALLERY (READ-ONLY FOR PUBLIC USERS) -->
     <section id="page-3" class="app-page">
       <div class="page-header-bar">
         <div>
           <h2>🎬 वीडियो व्लॉग लॉग, ब्लॉग्स एवं फोटो गैलरी</h2>
-          <p>कब, कहाँ और किस व्लॉग/ब्लॉग से क्या जानकारी साझा की गई + आपकी फोटो गैलरी</p>
+          <p>कब, कहाँ और किस व्लॉग/ब्लॉग से क्या जानकारी साझा की गई + आधिकारिक फोटो आर्काइव</p>
         </div>
-        <button type="button" class="btn btn-gold" onclick="window.BargadApp.openPublisherModal('photo')">📸 नई फोटो / ब्लॉग / व्लॉग अपलोड करें</button>
+        <a href="admin.html" class="btn btn-outline">🔒 एडमिन द्वारा प्रबंधित (Admin Only Upload)</a>
       </div>
 
       <h3 style="color:#1B4332; margin-bottom:12px;">🎥 क्रोनोलॉजिकल व्लॉग और एपिसोड लॉग (YouTube @BargadSahara)</h3>
@@ -893,20 +824,18 @@
       <h3 style="color:#1B4332; margin-bottom:12px;">✍️ विचारपूर्ण ब्लॉग्स और लेख (Editorial Articles)</h3>
       <div id="blogs-grid" class="grid-3" style="margin-bottom:28px;"></div>
 
-      <h3 style="color:#1B4332; margin-bottom:12px;">📸 फोटो गैलरी एवं यादों का झरोखा (Database Photo Archive)</h3>
+      <h3 style="color:#1B4332; margin-bottom:12px;">📸 फोटो गैलरी एवं यादों का झरोखा (Official Photo Archive)</h3>
       <div id="photo-gallery-grid" class="grid-3"></div>
     </section>
 
-    <!-- ======================================================================
-         PAGE 4: BIRTHPLACE BABIYAR ROOTS & BARGAD SAHARA TRUST GOVERNANCE
-         ====================================================================== -->
+    <!-- PAGE 4: BIRTHPLACE BABIYAR ROOTS & BARGAD SAHARA TRUST -->
     <section id="page-4" class="app-page">
       <div class="page-header-bar">
         <div>
           <h2>🏔️ जन्मभूमि बबियाड़ (Babiyar) की जड़ें एवं 'बरगद सहारा ट्रस्ट'</h2>
           <p>ग्राम बबियाड़ (नैनीताल) के संस्कारों से लेकर देश भर के बुजुर्गों की सेवा और स्वाभिमान तक का सफर</p>
         </div>
-        <button type="button" class="btn btn-outline" onclick="window.BargadApp.openLegalModal()">⚖️ कॉपीराइट, सहमति एवं कानूनी नियम</button>
+        <a href="legal-privacy-terms.html" target="_blank" class="btn btn-outline">⚖️ कॉपीराइट, सहमति एवं कानूनी नियम</a>
       </div>
 
       <div id="heritage-timeline-grid" class="grid-4" style="margin-bottom:24px;"></div>
@@ -920,9 +849,7 @@
 
   </main>
 
-  <!-- ========================================================================
-       4. BOTTOM BAR: REAL LIVE NEWS TICKER (DD National / BBC Hindi / India RSS)
-       ======================================================================== -->
+  <!-- 4. BOTTOM BAR: REAL LIVE NEWS TICKER -->
   <div class="bottom-news-bar" role="status" aria-live="polite">
     <div class="news-live-badge">
       <span class="live-dot"></span> समाचार LIVE (DD / BBC / भारत)
@@ -935,89 +862,30 @@
     </div>
   </div>
 
-  <!-- Modal 1: Full Article & Legal Reader -->
+  <!-- Modal: Full Article Reader -->
   <div id="blog-reader-modal" class="modal-backdrop" role="dialog" aria-modal="true">
     <div class="modal-content">
-      <button class="modal-close" onclick="window.BargadApp.closeModal('blog-reader-modal')" aria-label="बंद करें">✕</button>
+      <button class="modal-close" onclick="window.BargadPublicApp.closeModal('blog-reader-modal')" aria-label="बंद करें">✕</button>
       <div id="blog-modal-body"></div>
     </div>
   </div>
 
-  <!-- Modal 2: Database Content & Photo Upload Studio -->
-  <div id="publisher-studio-modal" class="modal-backdrop" role="dialog" aria-modal="true">
-    <div class="modal-content">
-      <button class="modal-close" onclick="window.BargadApp.closeModal('publisher-studio-modal')" aria-label="बंद करें">✕</button>
-      <h2 style="color:#1B4332; margin-bottom:4px;">✍️ बरगद सहारा — कंटेंट एवं फोटो डेटाबेस स्टूडियो</h2>
-      <p style="color:#3D4D44; font-size:0.86rem; margin-bottom:14px;">
-        यहाँ से आप नई फोटो (सीधे अपने फोन/लैपटॉप से), आज का सुविचार, नया ब्लॉग, नया व्लॉग या अभियान अपडेट डेटाबेस में सेव कर सकते हैं।
-      </p>
-
-      <form id="publisher-form" onsubmit="window.BargadApp.saveNewPost(event)">
-        <div class="form-group">
-          <label for="post-type">आप क्या सेव करना चाहते हैं?</label>
-          <select id="post-type" class="form-control" onchange="window.BargadApp.togglePhotoInput(this.value)" required>
-            <option value="thought">🌅 आज का सुविचार (Daily Thought)</option>
-            <option value="photo">📸 नई फोटो अपलोड करें (Photo Gallery DB)</option>
-            <option value="blog">📖 नया ब्लॉग / लेख (Blog Article)</option>
-            <option value="vlog">🎬 नया वीडियो / व्लॉग अपडेट (Vlog Log)</option>
-            <option value="mission">🌳 टॉप अभियान टिकर लाइन (Top Mission Ticker)</option>
-          </select>
-        </div>
-
-        <div id="photo-file-group" class="form-group" style="display:none;">
-          <label for="post-photo-file">अपनी फोटो चुनें (JPG / PNG) *</label>
-          <input type="file" id="post-photo-file" accept="image/*" class="form-control">
-        </div>
-
-        <div class="form-group">
-          <label for="post-title">शीर्षक / सुविचार / फोटो कैप्शन *</label>
-          <input type="text" id="post-title" class="form-control" placeholder="उदा: पिताजी और पोते के साथ सुबह की चाय..." required>
-        </div>
-
-        <div class="form-group">
-          <label for="post-category">विषय / एपिसोड नंबर (Category / Episode No.)</label>
-          <input type="text" id="post-category" class="form-control" placeholder="उदा: तीन पीढ़ियां / Vlog #05">
-        </div>
-
-        <div class="form-group">
-          <label for="post-author">वक्ता / लोकेशन (Elder Name / Location)</label>
-          <input type="text" id="post-author" class="form-control" placeholder="उदा: ग्राम बबियाड़ / चोरगलिया (नैनीताल) / नोएडा">
-        </div>
-
-        <div class="form-group">
-          <label for="post-details">पूरा विवरण / लेख (Full Details)</label>
-          <textarea id="post-details" rows="3" class="form-control" placeholder="यहाँ पूरा विवरण लिखें..."></textarea>
-        </div>
-
-        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:14px;">
-          <button type="button" class="btn btn-outline" onclick="window.BargadApp.closeModal('publisher-studio-modal')">रद्द करें</button>
-          <button type="submit" class="btn btn-primary">✅ डेटाबेस में सेव करें</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ========================================================================
-       ENTERPRISE DATA, INDEXED-DB STORAGE & LIVE NEWS ENGINE
-       ======================================================================== -->
+  <script src="assets/js/bargad-store.js"></script>
   <script>
-    window.BARGAD_DATA = {
-      missionTickers: [
-        "🌱 100 बुजुर्गों के 6,000 साल के जीवन और बचत के अनुभव का संकलन — हर बुढ़ापे का सच्चा सहारा",
-        "🏔️ जन्मभूमि ग्राम बबियाड़ (Babiyar) एवं चोरगलिया (नैनीताल) से नोएडा तक तीन पीढ़ियों (87 वर्ष • 44 वर्ष • 10 वर्ष) का संवाद",
-        "📖 'सुनहरी डायरी' के पहले पन्ने (#001/100) पर 87 वर्षीय सेवानिवृत्त शिक्षक पिताजी के हस्तलिखित आशीर्वाद और जीवन-सूत्र दर्ज",
-        "🌐 हमारे आधिकारिक YouTube, Facebook Page & Group और X हैंडल @BargadSahara से जुड़ें"
-      ],
+    (function () {
+      "use strict";
 
-      fallbackLiveNews: [
-        "📰 [DD News / भारत]: आयुष्मान वय वंदना योजना के अंतर्गत 70 वर्ष से अधिक आयु के सभी वरिष्ठ नागरिकों को ₹5 लाख तक का निःशुल्क स्वास्थ्य उपचार कवच।",
-        "🌍 [BBC Hindi / विश्व]: वैश्विक स्तर पर 'सिल्वर इकोनॉमी' और बुजुर्गों के जीवन-अनुभव को नई पीढ़ी के कौशल से जोड़ने की पहल को सराहना।",
-        "🏦 [आर्थिक समाचार]: सीनियर सिटीजन सेविंग्स स्कीम (SCSS) और सुरक्षित रिटायरमेंट प्लानिंग में वरिष्ठ नागरिकों का बढ़ता भरोसा।",
-        "🏔️ [उत्तराखंड / नैनीताल]: पहाड़ के पारंपरिक खान-पान, पैदल दिनचर्या और सामुदायिक चौपाल को दीर्घायु जीवन का प्रमुख आधार माना गया।",
-        "🛡️ [साइबर सुरक्षा अलर्ट]: वरिष्ठ नागरिकों को डिजिटल ठगी और फर्जी कॉल्स से बचाने के लिए बैंकों और गृह मंत्रालय का विशेष जागरूकता अभियान।"
-      ],
+      function escapeHTML(str) {
+        if (str === null || str === undefined) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
 
-      heritageJourney: [
+      const HERITAGE_JOURNEY = [
         {
           step: "1. जन्मभूमि बबियाड़ (Origin)",
           title: "ग्राम बबियाड़ (Babiyar), उत्तराखंड",
@@ -1038,408 +906,202 @@
           title: "बरगद सहारा ट्रस्ट एवं मीडिया",
           desc: "87 वर्ष के दादाजी, 44 वर्ष के पिता और 10 वर्ष के पोते (20 साल पुराने कैमरे के साथ) का संकल्प—100 बुजुर्गों के 6,000 साल के अनुभव को सहेजना और बुजुर्गों की सेवा करना।"
         }
-      ],
+      ];
 
-      dailyThoughts: [
-        {
-          id: "DT-001",
-          date: "26 अक्टूबर 2026",
-          category: "आर्थिक समझ और स्वाभिमान",
-          thoughtHi: "“कम आमदनी कभी इंसान को गरीब नहीं बनाती, बल्कि बिना सोचे-समझे किया गया दिखावा इंसान को कर्जदार बनाता है। जो अपनी चादर से दो इंच भीतर पैर रखता है, उसका बुढ़ापा किसी के आगे हाथ नहीं फैलाता।”",
-          thoughtEn: "Modest income never makes one poor; unplanned show-off does. Living slightly below your means guarantees dignity in old age.",
-          author: "पूज्य पिताजी (87 वर्षीय सेवानिवृत्त शिक्षक — जन्मभूमि बबियाड़ एवं चोरगलिया, नैनीताल)",
-          diaryPage: "सुनहरी डायरी — पृष्ठ #001"
-        },
-        {
-          id: "DT-002",
-          date: "25 अक्टूबर 2026",
-          category: "सेहत और पहाड़ की सादगी",
-          thoughtHi: "“बबियाड़ की मिट्टी, सुबह की धूप, अपने हाथ का सादा भोजन और अपनों के साथ बैठकर दो मीठे बोल—80 की उम्र के बाद सबसे बड़ी दवाई किसी बोतल में नहीं, बल्कि परिवार की मुस्कान में मिलती है।”",
-          thoughtEn: "The soil of Babiyar, morning sunlight, simple home-cooked food, and warm conversations with family are the greatest medicine after 80.",
-          author: "पूज्य ईजा (80 वर्ष — बबियाड़ एवं चोरगलिया, नैनीताल)",
-          diaryPage: "सुनहरी डायरी — पृष्ठ #002"
-        },
-        {
-          id: "DT-003",
-          date: "24 अक्टूबर 2026",
-          category: "तीन पीढ़ियों का सेतु",
-          thoughtHi: "“जब 10 साल का पोता अपने 87 साल के दादाजी से जीवन के सवाल पूछता है, तो वह सिर्फ कहानी नहीं सुनता—वह बबियाड़ की जड़ों से जुड़कर अपने आने वाले 70 सालों की नींव मजबूत कर रहा होता है।”",
-          thoughtEn: "When a 10-year-old grandson listens to his 87-year-old grandfather, he connects with his roots in Babiyar and builds the foundation for the next 70 years.",
-          author: "बरगद सहारा फाउंडर नोट (बबियाड़ • नैनीताल • नोएडा)",
-          diaryPage: "संस्थापक की कलम से"
+      const TRUST_WINGS = [
+        { title: "1. Bargad Sahara Media", desc: "YouTube, Facebook Page/Group और X (@BargadSahara) पर प्रामाणिक वीडियो व डॉक्यूमेंट्री।" },
+        { title: "2. Bargad Sahara Publication", desc: "'सुनहरी डायरी' के हस्तलिखित जीवन-संदेशों को कॉपीराइटेड पुस्तक ('6,000 साल का अनुभव') में प्रकाशित करना।" },
+        { title: "3. Bargad Sahara Foundation & Trust", desc: "बबियाड़/नैनीताल जैसे ग्रामीण क्षेत्रों और शहरों में जरूरतमंद बुजुर्गों की प्रत्यक्ष सेवा और स्वास्थ्य शिविर।" }
+      ];
+
+      const ETHICS_LIST = [
+        "एडमिन सुरक्षा नीति (Strict Role-Based Access): वेबसाइट पर केवल अधिकृत एडमिन (bargadsahara@gmail.com) ही फोटो, ब्लॉग या कंटेंट जोड़/हटा सकते हैं।",
+        "ऑन-कैमरा सहमति (Informed Media Consent): प्रत्येक वरिष्ठ नागरिक से पूर्व सहमति ली जाती है।",
+        "स्वाभिमान नीति (Dignity First Policy): बुजुर्गों को सदैव समाज के मार्गदर्शक (गुरु) के रूप में सम्मानित किया जाता है।",
+        "बौद्धिक संपदा संरक्षण (Copyright Act 1957): 'बरगद सहारा', 'सुनहरी डायरी' और '6,000 साल का तजुर्बा' के सभी अधिकार सुरक्षित हैं।"
+      ];
+
+      let allItems = [];
+      let currentElderFilter = "all";
+      let currentSearch = "";
+
+      function checkAdminBadge() {
+        const session = window.BargadStore.getAdminSession();
+        const btn = document.getElementById("header-admin-btn");
+        if (btn && session) {
+          btn.textContent = "⚙️ एडमिन पैनल (Logged In)";
+          btn.className = "btn btn-gold";
         }
-      ],
+      }
 
-      eldersArchive: [
-        {
-          serialNo: "#001 / 100",
-          name: "पूज्य पिताजी (श्री सुयाल जी)",
-          age: 87,
-          role: "सेवानिवृत्त शिक्षक (Retired Teacher)",
-          location: "पैतृक ग्राम बबियाड़ (Babiyar) एवं चोरगलिया, नैनीताल",
-          category: "financial",
-          summary: "ग्राम बबियाड़ की जड़ों से निकलकर एक आदर्श शिक्षक के रूप में सीमित आय में चार बच्चों को उच्च शिक्षा दिलाना, बिना कर्ज के घर बनाना और 87 की उम्र में भी स्वाभिमानी जीवन जीना।",
-          financialRule: "हर महीने की पहली तारीख को आमदनी का एक हिस्सा भविष्य और बच्चों की शिक्षा के लिए अलग रख देना।",
-          healthSecret: "बबियाड़ के पहाड़ों की पैदल दिनचर्या, समय पर सादा भोजन और पढ़ने-लिखने की आदत।",
-          handwrittenNote: "“अपनी जन्मभूमि बबियाड़ के संस्कारों को कभी मत भूलना। बच्चों को धन से ज्यादा संतोष की शिक्षा दो और कर्ज से दूर रहो।”"
-        },
-        {
-          serialNo: "#002 / 100",
-          name: "पूज्य ईजा (माता जी)",
-          age: 80,
-          role: "गृहलक्ष्मी एवं परिवार की धुरी",
-          location: "बबियाड़ (Babiyar) एवं चोरगलिया, नैनीताल",
-          category: "lifestyle",
-          summary: "बबियाड़ के पहाड़ी जीवन से लेकर आज तक 60+ वर्षों के वैवाहिक सफर में हर सुख-दुख में परिवार को एक सूत्र में पिरोकर रखना।",
-          financialRule: "रसोई और घर में अन्न या धन की एक पाई भी व्यर्थ न जाने देना—छोटी बचत ही मुसीबत में सबसे बड़ा सहारा बनती है।",
-          healthSecret: "प्रकृति और पहाड़ के करीब रहना, सुबह जल्दी उठना और मन में प्रसन्नता रखना।",
-          handwrittenNote: "“जिस घर में बड़े-बुजुर्गों का आदर, अपनी मिट्टी से प्रेम और आपस में मेल होता है, वहाँ लक्ष्मी और सेहत अपने आप निवास करती हैं।”"
-        },
-        {
-          serialNo: "#003 / 100",
-          name: "बबियाड़ के तीनों बुजुर्ग भाइयों की चौपाल",
-          age: 84,
-          role: "संयुक्त परिवार की विरासत (स्वर्गीय बड़े ताऊजी की स्मृति में)",
-          location: "बबियाड़ (Babiyar) एवं चोरगलिया, नैनीताल",
-          category: "family",
-          summary: "बबियाड़ के चार भाइयों की ऐतिहासिक जोड़ी में बड़े ताऊजी के आशीर्वाद और तीनों बुजुर्ग भाइयों का आज भी आंगन में साथ बैठकर पुराने दौर के संघर्ष और भाईचारे को जीवंत रखना।",
-          financialRule: "मुश्किल समय में भाइयों और परिवार का एक-दूसरे की ढाल बनना ही सबसे बड़ा बीमा है।",
-          healthSecret: "अकेलेपन से दूर रहकर अपनों के बीच खुलकर हंसना और सुख-दुख बांटना।",
-          handwrittenNote: "“भाईचारा और संयुक्त परिवार की जड़ें बबियाड़ के बरगद की तरह जितनी गहरी होंगी, आने वाली पीढ़ी उतनी ही सुरक्षित रहेगी।”"
-        },
-        {
-          serialNo: "#004 / 100",
-          name: "नोएडा मॉर्निंग पार्क के वरिष्ठ साथी",
-          age: 74,
-          role: "सेवानिवृत्त अधिकारी एवं शहरी वरिष्ठ नागरिक",
-          location: "नोएडा (सेक्टर पार्क चौपाल)",
-          category: "health",
-          summary: "शहरी जीवन में सुबह के व्यायाम, योग और मित्र मंडली के जरिए अपने अकेलेपन को सकारात्मक ऊर्जा में बदलना।",
-          financialRule: "रिटायरमेंट के बाद अपनी जमा-पूंजी को साइबर ठगी से बचाकर सुरक्षित रखना तथा मेडिकल फंड अलग रखना।",
-          healthSecret: "रोज सुबह 6:30 बजे पार्क में 45 मिनट की सैर, प्राणायाम और हमउम्र दोस्तों के साथ ठहाके।",
-          handwrittenNote: "“रिटायरमेंट काम से होता है, जिंदगी से नहीं। अपनी सेहत और अपनी पेंशन दोनों की कमान अपने हाथ में रखें।”"
+      function renderUI() {
+        const q = currentSearch.toLowerCase();
+        const thoughts = allItems.filter(i => i.content_type === "thought");
+        const elders = allItems.filter(i => i.content_type === "elder");
+        const vlogs = allItems.filter(i => i.content_type === "vlog");
+        const blogs = allItems.filter(i => i.content_type === "blog");
+        const photos = allItems.filter(i => i.content_type === "photo");
+        const missions = allItems.filter(i => i.content_type === "mission");
+
+        // 1. Top Mission Ticker
+        const mTrack = document.getElementById("top-mission-track");
+        if (mTrack) {
+          mTrack.innerHTML = missions
+            .map(m => `<span style="display:inline-block; margin-right:52px;">${escapeHTML(m.title)}</span>`)
+            .join("");
         }
-      ],
 
-      vlogsAndEpisodes: [
-        {
-          epNo: "एपिसोड #01 (Launch Vlog)",
-          date: "अक्टूबर 2026",
-          location: "नोएडा • चोरगलिया • बबियाड़",
-          title: "पिताजी की पहली कमाई, कम आमदनी में बचत का फॉर्मूला और 10 वर्षीय पोते का 20 साल पुराना कैमरा",
-          keyInformation: "87 वर्षीय रिटायर्ड शिक्षक पिताजी ने जन्मभूमि बबियाड़ के शुरुआती दिनों और सीमित वेतन में 4 बच्चों को पढ़ाने का अनुभव साझा किया। 'सुनहरी डायरी' के पहले पन्ने पर दादाजी के हस्ताक्षर।",
-          status: "YouTube @BargadSahara"
-        },
-        {
-          epNo: "शॉर्ट क्लिप #01",
-          date: "अक्टूबर 2026",
-          location: "नोएडा",
-          title: "87 साल के दादाजी का नोएडा आगमन और 10 साल के पोते का 20 साल पुराना कैमरा!",
-          keyInformation: "बिना किसी स्क्रिप्ट के 30 सेकंड का सच्चा पारिवारिक पल—पोते द्वारा दादाजी के पैर छूकर आशीर्वाद लेना।",
-          status: "Reels / YouTube Shorts"
-        },
-        {
-          epNo: "एपिसोड #02 (Park Chaupal)",
-          date: "अक्टूबर 2026",
-          location: "नोएडा मॉर्निंग पार्क",
-          title: "बबियाड़ (पहाड़) के 87 वर्षीय मास्टर जी और नोएडा के रिटायर्ड बुजुर्गों की सुबह की चौपाल",
-          keyInformation: "गाँव के सादे जीवन और शहरी रिटायरमेंट लाइफ की तुलना। सुबह व्यायाम करने वाले बुजुर्गों से संवाद।",
-          status: "अपकमिंग एपिसोड"
-        },
-        {
-          epNo: "एपिसोड #03 (Diwali Special)",
-          date: "दिवाली सप्ताह 2026",
-          location: "बबियाड़ एवं चोरगलिया, नैनीताल",
-          title: "87 के पिताजी, 80 की ईजा और तीनों बुजुर्ग भाइयों की ऐतिहासिक चौपाल",
-          keyInformation: "पहाड़ के आंगन में पिताजी, ईजा और भाइयों के साथ बातचीत—बड़े ताऊजी की यादें और 70 साल पहले की दिवाली।",
-          status: "दिवाली स्पेशल"
-        }
-      ],
-
-      blogsAndArticles: [
-        {
-          id: "BLOG-01",
-          date: "26 अक्टूबर 2026",
-          readTime: "4 मिनट पठन",
-          category: "जन्मभूमि और मिशन",
-          title: "बबियाड़ (Babiyar) से वैश्विक IT नेतृत्व और 'बरगद सहारा' तक: 6,000 साल के अनुभव को सहेजने का संकल्प",
-          author: "संस्थापक (जन्मभूमि: बबियाड़ • IT General Manager एवं एक शिक्षक के पुत्र)",
-          excerpt: "जन्मभूमि बबियाड़ के एक साधारण परिवार और शिक्षक पिता की छत्रछाया से निकलकर देश-विदेश में 20 साल काम करने के बाद क्यों हमने यह मिशन शुरू किया...",
-          fullContent: `
-            <p>मेरी जन्मभूमि <strong>ग्राम बबियाड़ (Babiyar)</strong> है। पहाड़ के एक साधारण परिवार और एक आदर्श शिक्षक पिता की छत्रछाया से निकलकर कॉर्पोरेट जगत में 20 वर्षों तक देश-विदेश में IT Solutions Expert और MNC में General Manager के रूप में काम करने के बाद, मेरे मन में एक सवाल हमेशा रहा—<strong>हमारे बबियाड़ और देश भर के बुजुर्गों के पास जो दशकों का जीवन-अनुभव, सादगी और आर्थिक अनुशासन है, क्या हम उसे आने वाली पीढ़ी के लिए सहेज पा रहे हैं?</strong></p>
-            <p style="margin-top:10px;">अगर हम सिर्फ 100 बुजुर्गों के पास बैठकर उनके 60 से 85 साल के जीवन का निचोड़ सुनें, तो हमारे पास <strong>6,000 साल का जीवंत अनुभव</strong> इकट्ठा हो जाता है।</p>
-          `
-        },
-        {
-          id: "BLOG-02",
-          date: "25 अक्टूबर 2026",
-          readTime: "5 मिनट पठन",
-          category: "फाइनेंशियल विजडम",
-          title: "रिटायर्ड शिक्षक पिताजी के 5 आर्थिक नियम: कम वेतन में भी कभी कर्ज क्यों नहीं लेना पड़ा?",
-          author: "बरगद सहारा रिसर्च डेस्क",
-          excerpt: "आइए जानते हैं बबियाड़ के 87 वर्षीय मास्टर जी का वह सरल 'मनी ब्लूप्रिंट' जिसने पूरे परिवार को आर्थिक सुरक्षा दी...",
-          fullContent: `
-            <p>पिताजी बताते हैं कि तनख्वाह चाहे कितनी भी कम रही हो, सबसे पहले बच्चों की शिक्षा और भविष्य की आकस्मिक जरूरत का हिस्सा अलग रखा जाता था। बबियाड़ के सादे जीवन ने सिखाया कि दिखावे के लिए लिया गया कर्ज इंसान की नींद छीन लेता है।</p>
-          `
-        },
-        {
-          id: "BLOG-03",
-          date: "24 अक्टूबर 2026",
-          readTime: "4 मिनट पठन",
-          category: "मानसिक स्वास्थ्य",
-          title: "रोज सिर्फ 15 मिनट अपने बुजुर्गों के पास बैठिए: अकेलेपन को दूर करने का सबसे सरल उपाय",
-          author: "बरगद सहारा एडिटोरियल",
-          excerpt: "बुजुर्गों को महंगे उपहारों से ज्यादा आपके समय और ध्यान की जरूरत होती है...",
-          fullContent: `
-            <p>बुजुर्ग सहानुभूति नहीं चाहते, वे सम्मान और सार्थकता चाहते हैं। रोज शाम फोन को एक तरफ रखकर अपने माता-पिता या दादा-दादी के साथ कम से कम 15 मिनट चाय पिएं और उनके अनुभव सुनें।</p>
-          `
-        }
-      ],
-
-      photoGallery: [
-        { title: "तीन पीढ़ियों का हाथ — सहारे का संकल्प", category: "तीन पीढ़ियां", location: "बबियाड़ • चोरगलिया • नोएडा", caption: "87 वर्षीय दादाजी, 44 वर्षीय पिता और 10 वर्षीय पोते का साथ।", imageData: "" },
-        { title: "20 साल पुराना कैमरा और जूनियर क्रिएटिव डायरेक्टर", category: "BTS", location: "नोएडा स्टूडियो", caption: "10 साल के बेटे द्वारा निकाला गया 20 साल पुराना सिग्नेचर कैमरा।", imageData: "" },
-        { title: "जन्मभूमि बबियाड़ (Babiyar) और चोरगलिया की जड़ें", category: "पैतृक धरोहर", location: "नैनीताल, उत्तराखंड", caption: "जहाँ 87 वर्ष के पिताजी और 80 वर्ष की ईजा की सादगी आज भी प्रेरणा है।", imageData: "" }
-      ],
-
-      trustInfo: {
-        wings: [
-          { title: "1. Bargad Sahara Media", desc: "YouTube, Facebook Page/Group और X (@BargadSahara) पर प्रामाणिक वीडियो व डॉक्यूमेंट्री।" },
-          { title: "2. Bargad Sahara Publication", desc: "'सुनहरी डायरी' के हस्तलिखित जीवन-संदेशों को कॉपीराइटेड पुस्तक ('6,000 साल का अनुभव') में प्रकाशित करना।" },
-          { title: "3. Bargad Sahara Foundation & Trust", desc: "बबियाड़/नैनीताल जैसे ग्रामीण क्षेत्रों और शहरों में जरूरतमंद बुजुर्गों की प्रत्यक्ष सेवा और स्वास्थ्य शिविर।" }
-        ],
-        ethicsAndLegal: [
-          "ऑन-कैमरा सहमति (Informed Media Consent): प्रत्येक वरिष्ठ नागरिक से पूर्व सहमति ली जाती है।",
-          "स्वाभिमान नीति (Dignity First Policy): बुजुर्गों को सदैव समाज के मार्गदर्शक (गुरु) के रूप में सम्मानित किया जाता है।",
-          "बौद्धिक संपदा संरक्षण (Copyright Act 1957): 'बरगद सहारा', 'सुनहरी डायरी' और '6,000 साल का तजुर्बा' के सभी अधिकार सुरक्षित हैं।",
-          "वित्तीय एवं स्वास्थ्य मानक (SEBI & Medical Guardrails): सभी अनुभव व्यक्तिगत जीवन के सबक हैं और नियामक डिस्क्लेमर के साथ प्रकाशित हैं।"
-        ]
-      }
-    };
-
-    (function () {
-      "use strict";
-
-      function escapeHTML(str) {
-        if (str === null || str === undefined) return "";
-        return String(str)
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
-      }
-
-      const DATA = window.BARGAD_DATA;
-
-      // IndexedDB Structured Database Engine (For Photos, Blogs, Thoughts & Vlogs)
-      const DB_NAME = "BargadSaharaEnterpriseDB";
-      const DB_VERSION = 1;
-      let dbInstance = null;
-
-      function initIndexedDB() {
-        return new Promise((resolve) => {
-          if (!window.indexedDB) return resolve(null);
-          const req = window.indexedDB.open(DB_NAME, DB_VERSION);
-          req.onupgradeneeded = function (e) {
-            const db = e.target.result;
-            if (!db.objectStoreNames.contains("posts")) {
-              db.createObjectStore("posts", { keyPath: "id" });
-            }
-          };
-          req.onsuccess = function (e) {
-            dbInstance = e.target.result;
-            resolve(dbInstance);
-          };
-          req.onerror = function () {
-            resolve(null);
-          };
-        });
-      }
-
-      function saveRecordToDB(record) {
-        return new Promise((resolve) => {
-          if (!dbInstance) return resolve(false);
-          try {
-            const tx = dbInstance.transaction(["posts"], "readwrite");
-            tx.objectStore("posts").put(record);
-            tx.oncomplete = () => resolve(true);
-            tx.onerror = () => resolve(false);
-          } catch (e) {
-            resolve(false);
-          }
-        });
-      }
-
-      function loadRecordsFromDB() {
-        return new Promise((resolve) => {
-          if (!dbInstance) return resolve([]);
-          try {
-            const tx = dbInstance.transaction(["posts"], "readonly");
-            const req = tx.objectStore("posts").getAll();
-            req.onsuccess = () => resolve(req.result || []);
-            req.onerror = () => resolve([]);
-          } catch (e) {
-            resolve([]);
-          }
-        });
-      }
-
-      // 1. Render Top Mission Ticker
-      function renderTopMissionTicker() {
-        const track = document.getElementById("top-mission-track");
-        if (!track) return;
-        track.innerHTML = DATA.missionTickers
-          .map(t => `<span style="display:inline-block; margin-right:52px;">${escapeHTML(t)}</span>`)
-          .join("");
-      }
-
-      // 2. Fetch & Render Bottom Live News Ticker (DD News / BBC Hindi / India RSS via /api/news)
-      function renderBottomNewsTicker(headlines) {
-        const track = document.getElementById("bottom-news-track");
-        if (!track) return;
-        const list = (headlines && headlines.length) ? headlines : DATA.fallbackLiveNews;
-        track.innerHTML = list
-          .map(h => `<span class="news-headline-item">${escapeHTML(h)}</span>`)
-          .join("");
-      }
-
-      function fetchLiveBroadcastNews() {
-        renderBottomNewsTicker(DATA.fallbackLiveNews);
-        fetch("/api/news")
-          .then(r => r.ok ? r.json() : null)
-          .then(res => {
-            if (res && res.ok && res.headlines && res.headlines.length) {
-              renderBottomNewsTicker(res.headlines);
-            }
-          })
-          .catch(() => {});
-      }
-
-      // 3. Render Page 1 (Single-Screen Front Page Cards)
-      function renderFrontPage() {
-        const t = DATA.dailyThoughts[0];
-        const v = DATA.vlogsAndEpisodes[0];
-
+        // 2. Front Page Spotlights
         const tCard = document.getElementById("front-thought-card");
-        if (tCard && t) {
+        const t0 = thoughts[0];
+        if (tCard && t0) {
           tCard.innerHTML = `
             <div>
               <div class="badge-row">
-                <span class="tag-earth">🌅 आज का सुविचार (#001)</span>
-                <span style="color:#68776F; font-weight:700;">${escapeHTML(t.date)}</span>
+                <span class="tag-earth">🌅 आज का सुविचार</span>
+                <span style="color:#68776F; font-weight:700;">${escapeHTML(t0.category || "बरगद की वाणी")}</span>
               </div>
               <p style="font-weight:800; font-size:0.98rem; color:#1B4332; line-height:1.5; margin-bottom:6px;">
-                ${escapeHTML(t.thoughtHi)}
+                ${escapeHTML(t0.title)}
               </p>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; padding-top:8px; border-top:1px solid #E5E0D3; font-size:0.8rem;">
-              <strong style="color:#7F4F24;">— ${escapeHTML(t.author)}</strong>
-              <button type="button" class="btn btn-outline" style="padding:4px 12px; font-size:0.76rem;" onclick="window.BargadApp.shareThought(0)">📲 शेयर</button>
+              <strong style="color:#7F4F24;">— ${escapeHTML(t0.author)}</strong>
+              <button type="button" class="btn btn-outline" style="padding:4px 12px; font-size:0.76rem;" onclick="window.BargadPublicApp.showPage(2)">सभी सुविचार →</button>
             </div>
           `;
         }
 
         const vCard = document.getElementById("front-vlog-card");
-        if (vCard && v) {
+        const v0 = vlogs[0];
+        if (vCard && v0) {
           vCard.innerHTML = `
             <div>
               <div class="badge-row">
-                <span class="tag">🎬 लेटेस्ट एपिसोड</span>
-                <span style="color:#1B4332; font-weight:800;">● ${escapeHTML(v.status)}</span>
+                <span class="tag">🎬 ${escapeHTML(v0.category || "लेटेस्ट एपिसोड")}</span>
+                <span style="color:#1B4332; font-weight:800;">● ${escapeHTML(v0.author || "YouTube")}</span>
               </div>
               <div style="font-weight:800; font-size:0.96rem; color:#121C17; line-height:1.45; margin-bottom:6px;">
-                ${escapeHTML(v.title)}
+                ${escapeHTML(v0.title)}
               </div>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; padding-top:8px; border-top:1px solid #E5E0D3; font-size:0.8rem;">
-              <span style="color:#68776F; font-weight:700;">📍 ${escapeHTML(v.location)}</span>
-              <button type="button" class="btn btn-outline" style="padding:4px 12px; font-size:0.76rem;" onclick="window.BargadApp.showPage(3)">पूरा व्लॉग लॉग →</button>
+              <span style="color:#68776F; font-weight:700;">📍 ${escapeHTML(v0.location)}</span>
+              <button type="button" class="btn btn-outline" style="padding:4px 12px; font-size:0.76rem;" onclick="window.BargadPublicApp.showPage(3)">पूरा व्लॉग लॉग →</button>
             </div>
           `;
         }
-      }
 
-      // 4. Render Secondary Pages (Page 2, Page 3, Page 4)
-      function renderAllPages(searchQuery = "") {
-        const q = searchQuery.toLowerCase();
+        // 3. Page 2: Elders Archive
+        const eGrid = document.getElementById("elders-archive-grid");
+        if (eGrid) {
+          let filteredElders = currentElderFilter === "all"
+            ? elders
+            : elders.filter(e => e.category === currentElderFilter);
+          if (q) {
+            filteredElders = filteredElders.filter(e =>
+              (e.title || "").toLowerCase().includes(q) ||
+              (e.summary || "").toLowerCase().includes(q) ||
+              (e.location || "").toLowerCase().includes(q)
+            );
+          }
+          eGrid.innerHTML = filteredElders.map(elder => {
+            const ex = elder.extra_json || {};
+            return `
+              <article class="card">
+                <div class="badge-row">
+                  <span class="tag">क्रमांक ${escapeHTML(ex.serialNo || elder.author || "#001/100")}</span>
+                  <span class="tag-earth">उम्र: ${escapeHTML(ex.age || "80+")} वर्ष</span>
+                </div>
+                <h3>${escapeHTML(elder.title)}</h3>
+                <p style="font-weight:700; color:#7F4F24;">📍 ${escapeHTML(elder.location)} ${ex.role ? "| " + escapeHTML(ex.role) : ""}</p>
+                <p>${escapeHTML(elder.summary)}</p>
+                ${(ex.financialRule || ex.healthSecret) ? `
+                <div style="background:#F1EEE5; padding:10px 12px; border-radius:8px; margin-bottom:10px; font-size:0.86rem;">
+                  ${ex.financialRule ? `<div><strong>💰 बचत का सूत्र:</strong> ${escapeHTML(ex.financialRule)}</div>` : ""}
+                  ${ex.healthSecret ? `<div style="margin-top:4px;"><strong>🌿 सेहत का राज:</strong> ${escapeHTML(ex.healthSecret)}</div>` : ""}
+                </div>` : ""}
+                <div class="diary-snippet"><strong>✍️ सुनहरी डायरी संदेश:</strong> ${escapeHTML(elder.full_content || elder.summary)}</div>
+              </article>
+            `;
+          }).join("");
+        }
 
-        renderEldersArchive("all", q);
-
-        // Daily Thoughts on Page 2
+        // 4. Page 2: Daily Thoughts
         const tGrid = document.getElementById("daily-thoughts-grid");
         if (tGrid) {
-          const tList = q
-            ? DATA.dailyThoughts.filter(t => t.thoughtHi.toLowerCase().includes(q) || t.author.toLowerCase().includes(q))
-            : DATA.dailyThoughts;
-          tGrid.innerHTML = tList.map(item => `
+          const fThoughts = q
+            ? thoughts.filter(t => (t.title || "").toLowerCase().includes(q) || (t.author || "").toLowerCase().includes(q))
+            : thoughts;
+          tGrid.innerHTML = fThoughts.map(item => `
             <article class="card">
               <div class="badge-row">
-                <span class="tag">${escapeHTML(item.category)}</span>
-                <span style="color:#7F4F24; font-weight:700;">${escapeHTML(item.date)}</span>
+                <span class="tag">${escapeHTML(item.category || "सुविचार")}</span>
+                <span style="color:#7F4F24; font-weight:700;">${escapeHTML(item.location || "")}</span>
               </div>
-              <h3>${escapeHTML(item.thoughtHi)}</h3>
-              <p style="font-style:italic;">${escapeHTML(item.thoughtEn)}</p>
-              <div class="diary-snippet"><strong>📖 ${escapeHTML(item.diaryPage)}</strong> — ${escapeHTML(item.author)}</div>
+              <h3>${escapeHTML(item.title)}</h3>
+              ${item.summary ? `<p style="font-style:italic;">${escapeHTML(item.summary)}</p>` : ""}
+              <div class="diary-snippet"><strong>— ${escapeHTML(item.author)}</strong></div>
             </article>
           `).join("");
         }
 
-        // Vlogs on Page 3
+        // 5. Page 3: Vlogs
         const vGrid = document.getElementById("vlogs-timeline-grid");
         if (vGrid) {
-          vGrid.innerHTML = DATA.vlogsAndEpisodes.map(v => `
+          vGrid.innerHTML = vlogs.map(v => `
             <article class="card">
               <div class="badge-row">
-                <span class="tag">${escapeHTML(v.epNo)}</span>
-                <span class="tag-earth">📍 ${escapeHTML(v.location)}</span>
+                <span class="tag">${escapeHTML(v.category || "एपिसोड")}</span>
+                <span class="tag-earth">📍 ${escapeHTML(v.location || "नोएडा / नैनीताल")}</span>
               </div>
               <h3>🎥 ${escapeHTML(v.title)}</h3>
-              <p>${escapeHTML(v.keyInformation)}</p>
+              <p>${escapeHTML(v.summary)}</p>
               <div style="margin-top:auto; display:flex; justify-content:space-between; align-items:center; padding-top:8px; border-top:1px dashed #CFC6B0;">
-                <span style="font-size:0.78rem; font-weight:700; color:#1B4332;">${escapeHTML(v.status)}</span>
-                <a href="https://www.youtube.com/@BargadSahara" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="padding:5px 12px;">▶ YouTube</a>
+                <span style="font-size:0.78rem; font-weight:700; color:#1B4332;">${escapeHTML(v.author || "YouTube @BargadSahara")}</span>
+                <a href="${escapeHTML(v.video_url || "https://www.youtube.com/@BargadSahara")}" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="padding:5px 12px;">▶ वीडियो देखें</a>
               </div>
             </article>
           `).join("");
         }
 
-        // Blogs on Page 3
+        // 6. Page 3: Blogs
         const bGrid = document.getElementById("blogs-grid");
         if (bGrid) {
-          bGrid.innerHTML = DATA.blogsAndArticles.map((b, idx) => `
+          bGrid.innerHTML = blogs.map((b) => `
             <article class="card">
+              ${b.image_data ? `<img src="${b.image_data}" alt="${escapeHTML(b.title)}" style="width:100%; height:165px; object-fit:cover; border-radius:10px; margin-bottom:10px;">` : ""}
               <div class="badge-row">
-                <span class="tag">${escapeHTML(b.category)}</span>
-                <span style="color:#7F4F24; font-weight:700;">${escapeHTML(b.date)}</span>
+                <span class="tag">${escapeHTML(b.category || "लेख")}</span>
+                <span style="color:#7F4F24; font-weight:700;">${escapeHTML(b.location || "")}</span>
               </div>
               <h3>${escapeHTML(b.title)}</h3>
-              <p>${escapeHTML(b.excerpt)}</p>
-              <button type="button" class="btn btn-outline" style="margin-top:auto; align-self:flex-start;" onclick="window.BargadApp.openBlogModal(${idx})">📖 पूरा लेख पढ़ें →</button>
+              <p>${escapeHTML(b.summary)}</p>
+              <button type="button" class="btn btn-outline" style="margin-top:auto; align-self:flex-start;" onclick="window.BargadPublicApp.openBlogModal('${escapeHTML(b.id)}')">📖 पूरा लेख पढ़ें →</button>
             </article>
           `).join("");
         }
 
-        // Photo Gallery on Page 3
+        // 7. Page 3: Photo Gallery
         const gGrid = document.getElementById("photo-gallery-grid");
         if (gGrid) {
-          gGrid.innerHTML = DATA.photoGallery.map(g => `
+          gGrid.innerHTML = photos.map(g => `
             <div class="card">
-              ${g.imageData ? `<img src="${g.imageData}" alt="${escapeHTML(g.title)}" style="width:100%; height:170px; object-fit:cover; border-radius:10px; margin-bottom:10px;">` : ""}
+              ${g.image_data ? `<img src="${g.image_data}" alt="${escapeHTML(g.title)}" style="width:100%; height:200px; object-fit:cover; border-radius:10px; margin-bottom:10px;">` : ""}
               <div class="badge-row">
-                <span class="tag">${escapeHTML(g.category)}</span>
-                <span style="color:#7F4F24; font-weight:700;">📍 ${escapeHTML(g.location)}</span>
+                <span class="tag">${escapeHTML(g.category || "गैलरी")}</span>
+                <span style="color:#7F4F24; font-weight:700;">📍 ${escapeHTML(g.location || "बबियाड़ / नोएडा")}</span>
               </div>
               <h3>📸 ${escapeHTML(g.title)}</h3>
-              <p>${escapeHTML(g.caption)}</p>
+              <p>${escapeHTML(g.summary)}</p>
             </div>
           `).join("");
         }
 
-        // Heritage & Trust on Page 4
+        // 8. Page 4: Heritage & Trust
         const hGrid = document.getElementById("heritage-timeline-grid");
         if (hGrid) {
-          hGrid.innerHTML = DATA.heritageJourney.map(h => `
+          hGrid.innerHTML = HERITAGE_JOURNEY.map(h => `
             <div class="card" style="border-top:4px solid #1B4332;">
               <span class="tag-earth" style="align-self:flex-start; margin-bottom:8px;">${escapeHTML(h.step)}</span>
               <h3>${escapeHTML(h.title)}</h3>
@@ -1449,7 +1111,7 @@
         }
         const wGrid = document.getElementById("trust-wings-grid");
         if (wGrid) {
-          wGrid.innerHTML = DATA.trustInfo.wings.map(w => `
+          wGrid.innerHTML = TRUST_WINGS.map(w => `
             <div class="card" style="border-top:4px solid #7F4F24;">
               <h3>${escapeHTML(w.title)}</h3>
               <p>${escapeHTML(w.desc)}</p>
@@ -1458,247 +1120,102 @@
         }
         const eList = document.getElementById("trust-ethics-list");
         if (eList) {
-          eList.innerHTML = DATA.trustInfo.ethicsAndLegal.map(r => `<li style="margin-bottom:6px;">✅ ${escapeHTML(r)}</li>`).join("");
+          eList.innerHTML = ETHICS_LIST.map(r => `<li style="margin-bottom:6px;">✅ ${escapeHTML(r)}</li>`).join("");
         }
       }
 
-      function renderEldersArchive(filterCategory = "all", searchQuery = "") {
-        const grid = document.getElementById("elders-archive-grid");
-        if (!grid) return;
-        let list = filterCategory === "all"
-          ? DATA.eldersArchive
-          : DATA.eldersArchive.filter(e => e.category === filterCategory);
-        if (searchQuery) {
-          const q = searchQuery.toLowerCase();
-          list = list.filter(e => e.name.toLowerCase().includes(q) || e.location.toLowerCase().includes(q) || e.summary.toLowerCase().includes(q));
-        }
-        grid.innerHTML = list.map(elder => `
-          <article class="card">
-            <div class="badge-row">
-              <span class="tag">क्रमांक ${escapeHTML(elder.serialNo)}</span>
-              <span class="tag-earth">उम्र: ${escapeHTML(elder.age)} वर्ष</span>
-            </div>
-            <h3>${escapeHTML(elder.name)}</h3>
-            <p style="font-weight:700; color:#7F4F24;">📍 ${escapeHTML(elder.location)} | ${escapeHTML(elder.role)}</p>
-            <p>${escapeHTML(elder.summary)}</p>
-            <div style="background:#F1EEE5; padding:10px 12px; border-radius:8px; margin-bottom:10px; font-size:0.86rem;">
-              <div><strong>💰 बचत का सूत्र:</strong> ${escapeHTML(elder.financialRule)}</div>
-              <div style="margin-top:4px;"><strong>🌿 सेहत का राज:</strong> ${escapeHTML(elder.healthSecret)}</div>
-            </div>
-            <div class="diary-snippet"><strong>✍️ सुनहरी डायरी संदेश:</strong> ${escapeHTML(elder.handwrittenNote)}</div>
-          </article>
-        `).join("");
+      async function reloadFromStore() {
+        const res = await window.BargadStore.fetchAllContent();
+        allItems = res.items || [];
+        checkAdminBadge();
+        renderUI();
       }
 
-      // Live IST Clock
+      function fetchLiveNews() {
+        const track = document.getElementById("bottom-news-track");
+        const fallback = [
+          "📰 [DD News / भारत]: आयुष्मान वय वंदना योजना के अंतर्गत 70 वर्ष से अधिक आयु के सभी वरिष्ठ नागरिकों को ₹5 लाख तक का निःशुल्क स्वास्थ्य उपचार कवच।",
+          "🌍 [BBC Hindi / विश्व]: वैश्विक स्तर पर 'सिल्वर इकोनॉमी' और बुजुर्गों के जीवन-अनुभव को नई पीढ़ी के कौशल से जोड़ने की पहल को सराहना।",
+          "🏔️ [उत्तराखंड / नैनीताल]: पहाड़ के पारंपरिक खान-पान, पैदल दिनचर्या और सामुदायिक चौपाल को दीर्घायु जीवन का प्रमुख आधार माना गया।"
+        ];
+        if (track) {
+          track.innerHTML = fallback.map(h => `<span class="news-headline-item">${escapeHTML(h)}</span>`).join("");
+        }
+        fetch("/api/news")
+          .then(r => r.ok ? r.json() : null)
+          .then(res => {
+            if (res && res.ok && res.headlines && track) {
+              track.innerHTML = res.headlines.map(h => `<span class="news-headline-item">${escapeHTML(h)}</span>`).join("");
+            }
+          })
+          .catch(() => {});
+      }
+
       function startClock() {
         const el = document.getElementById("live-ist-clock");
         if (!el) return;
         setInterval(() => {
-          el.textContent = new Date().toLocaleTimeString("hi-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " IST";
+          const now = new Date();
+          el.textContent = now.toLocaleTimeString("hi-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " IST";
         }, 1000);
       }
 
-      window.BargadApp = {
-        showPage: function (pageNum) {
-          document.querySelectorAll(".app-page").forEach(p => p.classList.remove("active"));
-          document.querySelectorAll(".page-nav-btn").forEach(b => {
-            b.classList.toggle("active", Number(b.getAttribute("data-page")) === Number(pageNum));
-          });
-          const target = document.getElementById("page-" + pageNum);
+      window.BargadPublicApp = {
+        showPage: function (pageNo) {
+          document.querySelectorAll(".app-page").forEach(el => el.classList.remove("active"));
+          const target = document.getElementById("page-" + pageNo);
           if (target) target.classList.add("active");
+
+          document.querySelectorAll(".page-nav-btn").forEach(btn => {
+            btn.classList.toggle("active", String(btn.getAttribute("data-page")) === String(pageNo));
+          });
           window.scrollTo({ top: 0, behavior: "smooth" });
         },
-
         setFontScale: function (scale) {
-          document.documentElement.style.setProperty("--font-scale", String(scale));
+          document.documentElement.style.setProperty("--font-scale", scale);
         },
-
-        globalSearch: function (event) {
-          if (event) event.preventDefault();
-          const input = document.getElementById("global-search-input");
-          const query = input ? input.value.trim() : "";
-          renderAllPages(query);
-          if (query) {
-            window.BargadApp.showPage(2);
-          }
-        },
-
-        filterElders: function (category, btnEl) {
+        filterElders: function (cat, btnEl) {
+          currentElderFilter = cat;
           document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
           if (btnEl) btnEl.classList.add("active");
-          renderEldersArchive(category);
+          renderUI();
         },
-
-        openBlogModal: function (index) {
-          const blog = DATA.blogsAndArticles[index];
+        globalSearch: function (e) {
+          e.preventDefault();
+          const input = document.getElementById("global-search-input");
+          currentSearch = input ? input.value.trim() : "";
+          renderUI();
+          this.showPage(2);
+        },
+        openBlogModal: function (id) {
+          const blog = allItems.find(x => x.id === id);
           if (!blog) return;
-          const modal = document.getElementById("blog-reader-modal");
           const body = document.getElementById("blog-modal-body");
-          body.innerHTML = `
-            <span class="tag">${escapeHTML(blog.category)}</span>
-            <h2 style="color:#1B4332; font-size:1.6rem; margin:10px 0 8px;">${escapeHTML(blog.title)}</h2>
-            <p style="color:#7F4F24; font-weight:700; font-size:0.86rem; margin-bottom:16px;">🗓️ ${escapeHTML(blog.date)} | ✍️ ${escapeHTML(blog.author)}</p>
-            <div style="line-height:1.8; font-size:0.98rem;">${blog.fullContent}</div>
-          `;
-          modal.classList.add("open");
+          if (body) {
+            body.innerHTML = `
+              <div class="badge-row">
+                <span class="tag">${escapeHTML(blog.category)}</span>
+                <span style="color:#7F4F24; font-weight:700;">${escapeHTML(blog.location)}</span>
+              </div>
+              <h2 style="color:#1B4332; margin-bottom:8px;">${escapeHTML(blog.title)}</h2>
+              <p style="font-weight:700; color:#7F4F24; margin-bottom:16px;">✍️ ${escapeHTML(blog.author)}</p>
+              ${blog.image_data ? `<img src="${blog.image_data}" alt="${escapeHTML(blog.title)}" style="width:100%; max-height:320px; object-fit:cover; border-radius:12px; margin-bottom:16px;">` : ""}
+              <div style="font-size:0.98rem; line-height:1.75; color:#121C17; white-space:pre-line;">${escapeHTML(blog.full_content || blog.summary)}</div>
+            `;
+          }
+          document.getElementById("blog-reader-modal").classList.add("open");
         },
-
-        openLegalModal: function () {
-          const modal = document.getElementById("blog-reader-modal");
-          const body = document.getElementById("blog-modal-body");
-          body.innerHTML = `
-            <span class="tag-earth">Legal, Copyright & Regulatory Guardrails</span>
-            <h2 style="color:#1B4332; font-size:1.5rem; margin:10px 0 12px;">बरगद सहारा (bargadsahara.com) — कॉपीराइट, सहमति एवं अस्वीकरण नीति</h2>
-            <div style="line-height:1.75; font-size:0.94rem;">
-              <p style="margin-bottom:10px;"><strong>1. कॉपीराइट सुरक्षा (Indian Copyright Act, 1957):</strong> 'बरगद सहारा | बुढ़ापे का सहारा', '100 बुजुर्ग, 6,000 साल का तजुर्बा' और 'सुनहरी डायरी' के सभी अधिकार सुरक्षित हैं।</p>
-              <p style="margin-bottom:10px;"><strong>2. वरिष्ठ नागरिक सहमति (Informed Consent):</strong> प्रत्येक बुजुर्ग की सहमति और गरिमा सर्वोपरि है।</p>
-              <p style="margin-bottom:10px;"><strong>3. वित्तीय एवं स्वास्थ्य अस्वीकरण (SEBI & Medical Guardrails):</strong> साझा किए गए अनुभव बुजुर्गों के व्यक्तिगत जीवन-अनुभव हैं, इन्हें SEBI-पंजीकृत निवेश या चिकित्सीय सलाह का विकल्प न माना जाए।</p>
-              <p><strong>4. बाल सुरक्षा एवं गोपनीयता (Child Safety & DPDP Act 2023):</strong> पारिवारिक सहभागिता अभिभावक की देखरेख में और डेटा सुरक्षा नियमों के अंतर्गत है।</p>
-            </div>
-          `;
-          modal.classList.add("open");
-        },
-
         closeModal: function (id) {
           const m = document.getElementById(id);
           if (m) m.classList.remove("open");
-        },
-
-        shareThought: function (idx) {
-          const t = DATA.dailyThoughts[idx] || DATA.dailyThoughts[0];
-          const text = `🌳 *बरगद सहारा | बुढ़ापे का सहारा* 🌳\n\n${t.thoughtHi}\n\n— ${t.author}\n🌐 https://bargadsahara.com | @BargadSahara`;
-          if (navigator.clipboard) {
-            navigator.clipboard.writeText(text).then(() => alert("सुविचार कॉपी हो गया है!"));
-          }
-        },
-
-        togglePhotoInput: function (val) {
-          const fg = document.getElementById("photo-file-group");
-          if (fg) fg.style.display = val === "photo" ? "block" : "none";
-        },
-
-        openPublisherModal: function (defaultType) {
-          const m = document.getElementById("publisher-studio-modal");
-          if (defaultType) {
-            const sel = document.getElementById("post-type");
-            if (sel) {
-              sel.value = defaultType;
-              window.BargadApp.togglePhotoInput(defaultType);
-            }
-          }
-          if (m) m.classList.add("open");
-        },
-
-        saveNewPost: function (event) {
-          event.preventDefault();
-          const type = document.getElementById("post-type").value;
-          const title = document.getElementById("post-title").value.trim();
-          const category = document.getElementById("post-category").value.trim() || "अपडेट";
-          const author = document.getElementById("post-author").value.trim() || "बबियाड़ • नैनीताल • नोएडा";
-          const details = document.getElementById("post-details").value.trim();
-          const today = new Date().toLocaleDateString("hi-IN", { day: "numeric", month: "long", year: "numeric" });
-
-          if (!title) return;
-
-          function finalizeSave(record) {
-            saveRecordToDB(record).then(() => {
-              renderTopMissionTicker();
-              renderFrontPage();
-              renderAllPages();
-              document.getElementById("publisher-form").reset();
-              window.BargadApp.togglePhotoInput("thought");
-              window.BargadApp.closeModal("publisher-studio-modal");
-              alert("आपका डेटा सफलतापूर्वक डेटाबेस में सेव और वेबसाइट पर लाइव हो गया है!");
-            });
-          }
-
-          if (type === "photo") {
-            const fileInput = document.getElementById("post-photo-file");
-            const file = fileInput && fileInput.files ? fileInput.files[0] : null;
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = function (e) {
-                const photoItem = {
-                  id: "DB-PHOTO-" + Date.now(),
-                  recordType: "photo",
-                  title: title,
-                  category: category,
-                  location: author,
-                  caption: details || title,
-                  imageData: e.target.result
-                };
-                DATA.photoGallery.unshift(photoItem);
-                finalizeSave(photoItem);
-              };
-              reader.readAsDataURL(file);
-              return;
-            }
-          }
-
-          if (type === "mission") {
-            const line = `🌱 ${title}`;
-            DATA.missionTickers.unshift(line);
-            finalizeSave({ id: "DB-MISSION-" + Date.now(), recordType: "mission", line });
-          } else if (type === "thought") {
-            const newThought = {
-              id: "DB-THOUGHT-" + Date.now(),
-              recordType: "thought",
-              date: today,
-              category: category,
-              thoughtHi: `“${title}”`,
-              thoughtEn: details || "Living wisdom from Bargad Sahara.",
-              author: author,
-              diaryPage: "सुनहरी डायरी"
-            };
-            DATA.dailyThoughts.unshift(newThought);
-            finalizeSave(newThought);
-          } else if (type === "vlog") {
-            const newVlog = {
-              id: "DB-VLOG-" + Date.now(),
-              recordType: "vlog",
-              epNo: category,
-              date: today,
-              location: author,
-              title: title,
-              keyInformation: details,
-              status: "YouTube @BargadSahara"
-            };
-            DATA.vlogsAndEpisodes.unshift(newVlog);
-            finalizeSave(newVlog);
-          } else {
-            const newBlog = {
-              id: "DB-BLOG-" + Date.now(),
-              recordType: "blog",
-              date: today,
-              readTime: "3 मिनट पठन",
-              category: category,
-              title: title,
-              author: author,
-              excerpt: details.substring(0, 150) + "...",
-              fullContent: `<p>${escapeHTML(details)}</p>`
-            };
-            DATA.blogsAndArticles.unshift(newBlog);
-            finalizeSave(newBlog);
-          }
         }
       };
 
-      document.addEventListener("DOMContentLoaded", function () {
-        initIndexedDB().then(() => loadRecordsFromDB()).then((records) => {
-          records.forEach(r => {
-            if (r.recordType === "photo") DATA.photoGallery.unshift(r);
-            else if (r.recordType === "thought") DATA.dailyThoughts.unshift(r);
-            else if (r.recordType === "vlog") DATA.vlogsAndEpisodes.unshift(r);
-            else if (r.recordType === "blog") DATA.blogsAndArticles.unshift(r);
-            else if (r.recordType === "mission" && r.line) DATA.missionTickers.unshift(r.line);
-          });
-          renderTopMissionTicker();
-          renderFrontPage();
-          renderAllPages();
-          fetchLiveBroadcastNews();
-          startClock();
-        });
+      document.addEventListener("DOMContentLoaded", () => {
+        reloadFromStore();
+        fetchLiveNews();
+        startClock();
+        window.BargadStore.onSync(() => reloadFromStore());
       });
     })();
   </script>
