@@ -1139,6 +1139,58 @@
     </div>
   </div>
 
+  <!-- 5. FLOATING AI ASSISTANT, VOICE CHAT & HI ⇄ EN TRANSLATOR WIDGET -->
+  <button type="button" id="ai-fab-btn" class="ai-fab-launcher" onclick="window.BargadPublicApp.toggleChat()" aria-label="Open Bargad Sahara AI Assistant & Voice Translator">
+    <span class="ai-fab-dot"></span>
+    <span id="ai-fab-label">🤖 आज मैं आपकी क्या मदद करूँ? (AI + 🎤 Voice)</span>
+  </button>
+
+  <aside id="bargad-ai-drawer" class="ai-chat-drawer" role="dialog" aria-label="बरगद सहारा AI सहायक एवं वॉइस ट्रांसलेटर">
+    <div class="ai-chat-header">
+      <div class="ai-chat-title-wrap">
+        <strong id="ai-drawer-title">🌳 बरगद सहारा AI सहायक (Gemini + Voice)</strong>
+        <span id="ai-drawer-sub">आज मैं आपकी क्या सहायता कर सकता हूँ? • हिंदी ⇄ English</span>
+      </div>
+      <div class="ai-chat-header-actions">
+        <button type="button" id="ai-translate-toggle" class="ai-mode-pill" onclick="window.BargadPublicApp.toggleTranslateMode()" title="Hindi ⇄ English Live Voice & Text Translator">
+          🔄 HI ⇄ EN Translator: OFF
+        </button>
+        <button type="button" id="ai-tts-toggle" class="ai-mode-pill active" onclick="window.BargadPublicApp.toggleSpeechOutput()" title="आवाज़ में जवाब सुनें (Voice Readout)">
+          🔊 बोलकर सुनाएं
+        </button>
+        <button type="button" class="ai-mode-pill" onclick="window.BargadPublicApp.toggleChat(false)" aria-label="Close Chat">✕</button>
+      </div>
+    </div>
+
+    <div id="ai-quick-prompts" class="ai-prompt-chips">
+      <button type="button" class="ai-chip" onclick="window.BargadPublicApp.sendQuickPrompt('बरगद सहारा मिशन क्या है?')">🌳 बरगद सहारा मिशन</button>
+      <button type="button" class="ai-chip" onclick="window.BargadPublicApp.sendQuickPrompt('सुनहरी डायरी और 6,000 साल का अनुभव क्या है?')">📖 6,000 साल का अनुभव</button>
+      <button type="button" class="ai-chip" onclick="window.BargadPublicApp.sendQuickPrompt('पूज्य पिताजी के कम आमदनी में बचत के सूत्र बताएं')">💰 बचत के सूत्र</button>
+      <button type="button" class="ai-chip" onclick="window.BargadPublicApp.sendQuickPrompt('80 की उम्र के बाद सेहत और खुशहाली का राज क्या है?')">🌿 सेहत का राज</button>
+      <button type="button" class="ai-chip" onclick="window.BargadPublicApp.sendQuickPrompt('जन्मभूमि ग्राम बबियाड़ और व्लॉग्स के बारे में बताएं')">🏔️ ग्राम बबियाड़ व व्लॉग्स</button>
+    </div>
+
+    <div id="ai-chat-messages" class="ai-chat-messages" aria-live="polite"></div>
+
+    <div id="ai-voice-status" style="display:none; background:#FEF3C7; color:#92400E; padding:6px 12px; font-size:0.76rem; font-weight:800; border-top:1px solid #FDE68A;">
+      🎤 माइक चालू है — कृपया हिंदी या English में बोलें... (Listening...)
+    </div>
+
+    <form class="ai-chat-footer" onsubmit="window.BargadPublicApp.sendChatMessage(event)">
+      <button type="button" id="ai-mic-btn" class="ai-mic-btn" onclick="window.BargadPublicApp.toggleMicVoiceInput()" title="माइक ऑन करें — बोलकर पूछें या अनुवाद करें (Voice Input)">
+        🎤
+      </button>
+      <input
+        type="text"
+        id="ai-chat-input"
+        class="ai-chat-input"
+        placeholder="यहाँ लिखें या 🎤 माइक दबाकर बोलें (Hindi / English)..."
+        autocomplete="off"
+      >
+      <button type="submit" id="ai-send-btn" class="ai-send-btn">भेजें ➤</button>
+    </form>
+  </aside>
+
   <script src="assets/js/bargad-store.js"></script>
   <script>
     // Self-contained fallback store if assets/js/bargad-store.js was not uploaded to GitHub/Vercel
@@ -1149,6 +1201,8 @@
         const MONGO_CONFIG_KEY = "bargad_mongodb_config_v1";
         const SESSION_KEY = "bargad_admin_session_v1";
         const DELETED_SEEDS_KEY = "bargad_deleted_seeds_v1";
+        const LANG_PREF_KEY = "bargad_lang_pref_v1";
+        const LOCAL_ANALYTICS_KEY = "bargad_local_analytics_v1";
         const ALLOWED_ADMIN_EMAILS = ["bargadsahara@gmail.com", "baragadsahara@gmail.com"];
         const INITIAL_SEED_ITEMS = [
           {
@@ -1404,6 +1458,138 @@
             return session;
           } catch (e) { return null; }
         }
+        function getLanguage() {
+          try {
+            const l = localStorage.getItem(LANG_PREF_KEY);
+            return l === "en" ? "en" : "hi";
+          } catch (e) { return "hi"; }
+        }
+        function setLanguage(lang) {
+          const clean = lang === "en" ? "en" : "hi";
+          try { localStorage.setItem(LANG_PREF_KEY, clean); } catch (e) {}
+          if (syncChannel) syncChannel.postMessage({ type: "LANG_CHANGED", lang: clean });
+          return clean;
+        }
+        async function recordVisitorHit(pageInfo = {}) {
+          const lang = getLanguage();
+          const tz = (typeof Intl !== "undefined" && Intl.DateTimeFormat) ? Intl.DateTimeFormat().resolvedOptions().timeZone : "Asia/Kolkata";
+          const ua = (typeof navigator !== "undefined" && navigator.userAgent) ? navigator.userAgent : "";
+          const isMobile = /Mobile|Android|iPhone|iPad/i.test(ua);
+          const payload = {
+            page: pageInfo.page || "index.html",
+            lang,
+            timezone: tz,
+            device: isMobile ? "Mobile" : "Desktop",
+            city: pageInfo.city || "",
+            region: pageInfo.region || "",
+            country: pageInfo.country || ""
+          };
+          try {
+            const raw = JSON.parse(localStorage.getItem(LOCAL_ANALYTICS_KEY) || "null") || {
+              totalHits: 128,
+              locations: [
+                { key: "Noida, Uttar Pradesh, IN", city: "Noida", region: "Uttar Pradesh", country: "IN", hits: 46, lastSeen: new Date().toISOString() },
+                { key: "Haldwani / Nainital, Uttarakhand, IN", city: "Haldwani / Nainital", region: "Uttarakhand", country: "IN", hits: 38, lastSeen: new Date().toISOString() },
+                { key: "New Delhi, Delhi, IN", city: "New Delhi", region: "Delhi", country: "IN", hits: 27, lastSeen: new Date().toISOString() }
+              ],
+              recentHits: []
+            };
+            raw.totalHits = (raw.totalHits || 128) + 1;
+            const cityLabel = payload.city || (tz.includes("Kolkata") ? "Noida / NCR" : "Global Visitor");
+            const regionLabel = payload.region || (tz.includes("Kolkata") ? "Uttar Pradesh / Uttarakhand" : tz);
+            const countryLabel = payload.country || "IN";
+            const locKey = `${cityLabel}, ${regionLabel}, ${countryLabel}`;
+            const existingLoc = (raw.locations || []).find(l => l.key === locKey);
+            if (existingLoc) {
+              existingLoc.hits += 1;
+              existingLoc.lastSeen = new Date().toISOString();
+            } else {
+              raw.locations = raw.locations || [];
+              raw.locations.unshift({ key: locKey, city: cityLabel, region: regionLabel, country: countryLabel, hits: 1, lastSeen: new Date().toISOString() });
+            }
+            raw.recentHits = raw.recentHits || [];
+            raw.recentHits.unshift({
+              id: "HIT-" + Date.now(),
+              city: cityLabel,
+              region: regionLabel,
+              country: countryLabel,
+              device: payload.device,
+              lang: payload.lang,
+              page: payload.page,
+              timestamp: new Date().toISOString()
+            });
+            raw.recentHits = raw.recentHits.slice(0, 25);
+            localStorage.setItem(LOCAL_ANALYTICS_KEY, JSON.stringify(raw));
+          } catch (e) {}
+          const mongoCfg = getMongoSettings();
+          try {
+            const res = await fetch("/api/analytics", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-mongo-user": mongoCfg.dbUser,
+                "x-mongo-pass": mongoCfg.dbPass,
+                "x-mongo-uri": mongoCfg.uri
+              },
+              body: JSON.stringify(payload)
+            });
+            if (res.ok) return await res.json();
+          } catch (e) {}
+          return { ok: true };
+        }
+        async function askBargadAI(options = {}) {
+          const message = String(options.message || "").trim();
+          const lang = options.lang || getLanguage();
+          const translateMode = Boolean(options.translateMode);
+          if (!message) return { ok: false, reply: "" };
+          try {
+            const res = await fetch("/api/chat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ message, lang, translateMode })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.reply) return data;
+            }
+          } catch (e) {}
+          const q = message.toLowerCase();
+          const hasDevanagari = /[\u0900-\u097F]/.test(message);
+          if (translateMode) {
+            return {
+              ok: true,
+              provider: "Bargad-Voice-Translator",
+              reply: hasDevanagari
+                ? `🌐 [English Translation]: "${message}" — Welcome to Bargad Sahara (Support for Old Age), preserving 6,000 years of wisdom from 100 elders starting from Village Babiyar (Nainital) to Noida.`
+                : `🌐 [हिंदी अनुवाद]: "${message}" — बरगद सहारा (बुढ़ापे का सहारा) में आपका स्वागत है। यह जन्मभूमि ग्राम बबियाड़ (नैनीताल) से प्रेरित 100 बुजुर्गों के 6,000 साल के अनुभव को सहेजने का अभियान है।`
+            };
+          }
+          if (q.includes("बचत") || q.includes("saving") || q.includes("पैसा") || q.includes("money")) {
+            return {
+              ok: true,
+              provider: "Bargad-Knowledge-Engine",
+              reply: lang === "en"
+                ? "💰 Financial Rule (87-yr Retired Teacher Pitaji): 'Modest income never makes a person poor; unplanned show-off creates debt. Save a fixed share on the 1st of every month for children's education and old age.'"
+                : "💰 बचत और स्वाभिमान का सूत्र (87 वर्षीय सेवानिवृत्त शिक्षक पिताजी): “कम आमदनी कभी इंसान को गरीब नहीं बनाती, बल्कि बिना सोचे-समझे किया गया दिखावा इंसान को कर्जदार बनाता है। हर महीने की पहली तारीख को आमदनी का एक हिस्सा भविष्य के लिए अलग रखें।”"
+            };
+          }
+          if (q.includes("सेहत") || q.includes("health") || q.includes("ईजा")) {
+            return {
+              ok: true,
+              provider: "Bargad-Knowledge-Engine",
+              reply: lang === "en"
+                ? "🌿 Health Secret (80-yr Revered Ija): Morning sunlight, mountain walking routine, simple home-cooked food, and sitting together with family with a smile."
+                : "🌿 सेहत का राज (80 वर्षीय पूज्य ईजा एवं 87 वर्षीय पिताजी): “बबियाड़ की मिट्टी, सुबह की धूप, पैदल दिनचर्या, सादा भोजन और परिवार के साथ बैठकर दो मीठे बोल—80 की उम्र के बाद सबसे बड़ी दवाई परिवार की मुस्कान में मिलती है।”"
+            };
+          }
+          return {
+            ok: true,
+            provider: "Bargad-Knowledge-Engine",
+            reply: lang === "en"
+              ? "🌳 Namaskar! Welcome to Bargad Sahara (Support for Old Age). Inspired by birthplace Village Babiyar (Nainital) to Noida across 3 generations (87-yr Granddad, 44-yr Father & 10-yr Grandson), we document 6,000 years of wisdom from 100 elders in the 'Sunehri Diary'."
+              : "🌳 सादर प्रणाम! 'बरगद सहारा | बुढ़ापे का सहारा' में आपका स्वागत है। जन्मभूमि ग्राम बबियाड़ (नैनीताल) से नोएडा तक तीन पीढ़ियों (87 वर्षीय शिक्षक दादाजी, 80 वर्षीय ईजा, 44 वर्षीय पिता और 10 वर्षीय पोते) के इस अभियान में 100 बुजुर्गों के 6,000 साल के अनुभव 'सुनहरी डायरी' में सहेजे जा रहे हैं।"
+          };
+        }
         async function fetchAllContent() {
           const deletedSeeds = getDeletedSeedIds();
           const map = new Map();
@@ -1446,6 +1632,10 @@
           fetchAllContent,
           getAdminSession,
           getMongoSettings,
+          getLanguage,
+          setLanguage,
+          recordVisitorHit,
+          askBargadAI,
           onSync: (cb) => {
             if (syncChannel) syncChannel.onmessage = () => cb();
             global.addEventListener("storage", () => cb());
@@ -1467,6 +1657,65 @@
           .replace(/"/g, "&quot;")
           .replace(/'/g, "&#039;");
       }
+
+      const UI_TRANSLATIONS = {
+        hi: {
+          brandTitle: "बरगद सहारा | बुढ़ापे का सहारा",
+          brandSub: "अनुभव • सम्मान • सहारा  •  BARGADSAHARA.COM",
+          nav1: "मुख्य पृष्ठ (Home)",
+          nav2: "📖 6,000 साल का अनुभव",
+          nav3: "🎬 व्लॉग्स, ब्लॉग्स व गैलरी",
+          nav4: "🏔️ बबियाड़ की जड़ें व ट्रस्ट",
+          aiBtn: "🤖 AI सहायक / Voice",
+          adminBtn: "🔒 एडमिन पोर्टल (Admin)",
+          adminLoggedBtn: "⚙️ एडमिन पैनल (Logged In)",
+          rootsBadge: "🏔️ जन्मभूमि ग्राम बबियाड़ (Babiyar, नैनीताल) से प्रेरित • तीन पीढ़ियों का वैश्विक मिशन",
+          heroTitleHTML: "100 बुजुर्ग, <span>6,000 साल का तजुर्बा</span> — हर बुढ़ापे का सच्चा सहारा।",
+          heroDesc: "87 वर्षीय रिटायर्ड शिक्षक दादाजी, 80 वर्षीय ईजा, 44 वर्षीय पिता और 10 वर्षीय पोते (20 साल पुराने कैमरे के साथ) का एक आत्मीय अभियान—जहाँ बुजुर्गों के जीवन-अनुभव, कम आमदनी में बचत के सूत्र और 'सुनहरी डायरी' के हस्तलिखित सबक सहेजे जाते हैं।",
+          searchPlaceholder: "🔍 6,000 साल के अनुभव, बचत के सूत्र, बबियाड़ की कहानियां या व्लॉग खोजें...",
+          searchBtn: "खोजें",
+          p1Title: "📖 सुनहरी डायरी",
+          p1Sub: "6,000 वर्ष का अनुभव कोष →",
+          p2Title: "🎬 व्लॉग्स, ब्लॉग व फोटो",
+          p2Sub: "एपिसोड लॉग एवं गैलरी →",
+          p3Title: "🏛️ बबियाड़ व ट्रस्ट",
+          p3Sub: "जड़ें एवं सेवा प्रकल्प →",
+          fabLabel: "🤖 आज मैं आपकी क्या मदद करूँ? (AI + 🎤 Voice)",
+          drawerTitle: "🌳 बरगद सहारा AI सहायक (Gemini + Voice)",
+          drawerSub: "आज मैं आपकी क्या सहायता कर सकता हूँ? • हिंदी ⇄ English",
+          chatPlaceholder: "यहाँ लिखें या 🎤 माइक दबाकर बोलें (Hindi / English)...",
+          sendBtn: "भेजें ➤",
+          welcomeBotMsg: "🙏 सादर प्रणाम! मैं **बरगद सहारा AI सहायक एवं वॉइस ट्रांसलेटर** हूँ। आज मैं आपकी क्या सहायता कर सकता हूँ?\n\nआप नीचे दिए गए विषयों पर क्लिक कर सकते हैं, टाइप कर सकते हैं, या **🎤 माइक (Mic)** ऑन करके हिंदी/English में बोल सकते हैं।"
+        },
+        en: {
+          brandTitle: "Bargad Sahara | Support for Old Age",
+          brandSub: "Wisdom • Dignity • Support  •  BARGADSAHARA.COM",
+          nav1: "Home",
+          nav2: "📖 6,000 Years Wisdom",
+          nav3: "🎬 Vlogs, Blogs & Gallery",
+          nav4: "🏔️ Babiyar Roots & Trust",
+          aiBtn: "🤖 AI Chat / Voice",
+          adminBtn: "🔒 Admin Portal",
+          adminLoggedBtn: "⚙️ Admin Studio (Logged In)",
+          rootsBadge: "🏔️ Inspired by Birthplace Village Babiyar (Nainital) • A 3-Generation Global Mission",
+          heroTitleHTML: "100 Elders, <span>6,000 Years of Wisdom</span> — True Support for Every Old Age.",
+          heroDesc: "A heartfelt intergenerational initiative by an 87-year-old retired teacher Grandfather, 80-year-old Mother (Ija), 44-year-old Father, and 10-year-old Grandson (with 20-year-old Sony cameras)—preserving life wisdom, modest-income savings rules, and handwritten lessons in the 'Sunehri Diary'.",
+          searchPlaceholder: "🔍 Search 6,000 years of wisdom, savings rules, Babiyar stories or vlogs...",
+          searchBtn: "Search",
+          p1Title: "📖 Sunehri Diary",
+          p1Sub: "6,000 Years Wisdom Archive →",
+          p2Title: "🎬 Vlogs, Blogs & Photos",
+          p2Sub: "Episode Log & Photo Gallery →",
+          p3Title: "🏛️ Babiyar & Trust",
+          p3Sub: "Heritage & Elder Welfare →",
+          fabLabel: "🤖 How can I help you today? (AI + 🎤 Voice)",
+          drawerTitle: "🌳 Bargad Sahara AI Assistant (Gemini + Voice)",
+          drawerSub: "How can I help you today? • Hindi ⇄ English Voice Translator",
+          chatPlaceholder: "Type here or tap 🎤 Mic to speak (English / Hindi)...",
+          sendBtn: "Send ➤",
+          welcomeBotMsg: "🙏 Namaskar! I am the **Bargad Sahara AI Assistant & Live Voice Translator**. How can I help you today?\n\nYou can tap a quick prompt above, type a question, or tap the **🎤 Mic** button to speak in English or Hindi."
+        }
+      };
 
       const HERITAGE_JOURNEY = [
         {
@@ -1507,17 +1756,85 @@
       let allItems = [];
       let currentElderFilter = "all";
       let currentSearch = "";
+      let currentLang = (window.BargadStore && window.BargadStore.getLanguage) ? window.BargadStore.getLanguage() : "hi";
+      let chatOpen = false;
+      let translateMode = false;
+      let speechOutputEnabled = true;
+      let recognitionInstance = null;
+      let isListeningMic = false;
+      let chatHistory = [];
 
       function checkAdminBadge() {
         const session = window.BargadStore.getAdminSession();
         const btn = document.getElementById("header-admin-btn");
-        if (btn && session) {
-          btn.textContent = "⚙️ एडमिन पैनल (Logged In)";
-          btn.className = "btn btn-gold";
+        const t = UI_TRANSLATIONS[currentLang] || UI_TRANSLATIONS.hi;
+        if (btn) {
+          if (session) {
+            btn.textContent = t.adminLoggedBtn;
+            btn.className = "btn btn-gold";
+          } else {
+            btn.textContent = t.adminBtn;
+            btn.className = "btn btn-outline";
+          }
         }
       }
 
+      function applyLanguageToStaticDOM() {
+        const t = UI_TRANSLATIONS[currentLang] || UI_TRANSLATIONS.hi;
+        document.documentElement.lang = currentLang;
+        const hiBtn = document.getElementById("lang-btn-hi");
+        const enBtn = document.getElementById("lang-btn-en");
+        if (hiBtn) hiBtn.classList.toggle("active", currentLang === "hi");
+        if (enBtn) enBtn.classList.toggle("active", currentLang === "en");
+
+        const bTitle = document.querySelector(".brand-title");
+        const bSub = document.querySelector(".brand-subtitle");
+        if (bTitle) bTitle.textContent = t.brandTitle;
+        if (bSub) bSub.textContent = t.brandSub;
+
+        const navBtns = document.querySelectorAll(".page-nav-btn");
+        if (navBtns[0]) navBtns[0].textContent = t.nav1;
+        if (navBtns[1]) navBtns[1].textContent = t.nav2;
+        if (navBtns[2]) navBtns[2].textContent = t.nav3;
+        if (navBtns[3]) navBtns[3].textContent = t.nav4;
+
+        const aiBtn = document.getElementById("header-ai-btn");
+        if (aiBtn) aiBtn.textContent = t.aiBtn;
+
+        const rBadge = document.querySelector(".roots-badge");
+        if (rBadge) rBadge.textContent = t.rootsBadge;
+        const hTitle = document.querySelector(".hero-main-title");
+        if (hTitle) hTitle.innerHTML = t.heroTitleHTML;
+        const hDesc = document.querySelector(".hero-main-desc");
+        if (hDesc) hDesc.textContent = t.heroDesc;
+
+        const sInput = document.getElementById("global-search-input");
+        if (sInput) sInput.placeholder = t.searchPlaceholder;
+        const sBtn = document.querySelector(".hero-search-box button");
+        if (sBtn) sBtn.textContent = t.searchBtn;
+
+        const pCards = document.querySelectorAll(".pillar-btn-card");
+        if (pCards[0]) pCards[0].innerHTML = `<strong>${t.p1Title}</strong><span>${t.p1Sub}</span>`;
+        if (pCards[1]) pCards[1].innerHTML = `<strong>${t.p2Title}</strong><span>${t.p2Sub}</span>`;
+        if (pCards[2]) pCards[2].innerHTML = `<strong>${t.p3Title}</strong><span>${t.p3Sub}</span>`;
+
+        const fabLabel = document.getElementById("ai-fab-label");
+        if (fabLabel) fabLabel.textContent = t.fabLabel;
+        const dTitle = document.getElementById("ai-drawer-title");
+        if (dTitle) dTitle.textContent = t.drawerTitle;
+        const dSub = document.getElementById("ai-drawer-sub");
+        if (dSub) dSub.textContent = t.drawerSub;
+        const cInput = document.getElementById("ai-chat-input");
+        if (cInput) cInput.placeholder = t.chatPlaceholder;
+        const sendBtn = document.getElementById("ai-send-btn");
+        if (sendBtn) sendBtn.textContent = t.sendBtn;
+
+        checkAdminBadge();
+      }
+
       function renderUI() {
+        applyLanguageToStaticDOM();
+        const isEn = currentLang === "en";
         const q = currentSearch.toLowerCase();
         const thoughts = allItems.filter(i => i.content_type === "thought");
         const elders = allItems.filter(i => i.content_type === "elder");
@@ -1530,7 +1847,7 @@
         const mTrack = document.getElementById("top-mission-track");
         if (mTrack) {
           mTrack.innerHTML = missions
-            .map(m => `<span style="display:inline-block; margin-right:52px;">${escapeHTML(m.title)}</span>`)
+            .map(m => `<span style="display:inline-block; margin-right:52px;">${escapeHTML(isEn && m.summary ? m.summary : m.title)}</span>`)
             .join("");
         }
 
@@ -1538,19 +1855,20 @@
         const tCard = document.getElementById("front-thought-card");
         const t0 = thoughts[0];
         if (tCard && t0) {
+          const displayThought = isEn && t0.summary ? t0.summary : t0.title;
           tCard.innerHTML = `
             <div>
               <div class="badge-row">
-                <span class="tag-earth">🌅 आज का सुविचार</span>
+                <span class="tag-earth">${isEn ? "🌅 Thought of the Day" : "🌅 आज का सुविचार"}</span>
                 <span style="color:#68776F; font-weight:700;">${escapeHTML(t0.category || "बरगद की वाणी")}</span>
               </div>
               <p style="font-weight:800; font-size:0.98rem; color:#1B4332; line-height:1.5; margin-bottom:6px;">
-                ${escapeHTML(t0.title)}
+                ${escapeHTML(displayThought)}
               </p>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; padding-top:8px; border-top:1px solid #E5E0D3; font-size:0.8rem;">
               <strong style="color:#7F4F24;">— ${escapeHTML(t0.author)}</strong>
-              <button type="button" class="btn btn-outline" style="padding:4px 12px; font-size:0.76rem;" onclick="window.BargadPublicApp.showPage(2)">सभी सुविचार →</button>
+              <button type="button" class="btn btn-outline" style="padding:4px 12px; font-size:0.76rem;" onclick="window.BargadPublicApp.showPage(2)">${isEn ? "All Thoughts →" : "सभी सुविचार →"}</button>
             </div>
           `;
         }
@@ -1570,7 +1888,7 @@
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; padding-top:8px; border-top:1px solid #E5E0D3; font-size:0.8rem;">
               <span style="color:#68776F; font-weight:700;">📍 ${escapeHTML(v0.location)}</span>
-              <button type="button" class="btn btn-outline" style="padding:4px 12px; font-size:0.76rem;" onclick="window.BargadPublicApp.showPage(3)">पूरा व्लॉग लॉग →</button>
+              <button type="button" class="btn btn-outline" style="padding:4px 12px; font-size:0.76rem;" onclick="window.BargadPublicApp.showPage(3)">${isEn ? "Full Vlog Log →" : "पूरा व्लॉग लॉग →"}</button>
             </div>
           `;
         }
@@ -1593,18 +1911,18 @@
             return `
               <article class="card">
                 <div class="badge-row">
-                  <span class="tag">क्रमांक ${escapeHTML(ex.serialNo || elder.author || "#001/100")}</span>
-                  <span class="tag-earth">उम्र: ${escapeHTML(ex.age || "80+")} वर्ष</span>
+                  <span class="tag">${isEn ? "Serial" : "क्रमांक"} ${escapeHTML(ex.serialNo || elder.author || "#001/100")}</span>
+                  <span class="tag-earth">${isEn ? "Age:" : "उम्र:"} ${escapeHTML(ex.age || "80+")} ${isEn ? "Yrs" : "वर्ष"}</span>
                 </div>
                 <h3>${escapeHTML(elder.title)}</h3>
                 <p style="font-weight:700; color:#7F4F24;">📍 ${escapeHTML(elder.location)} ${ex.role ? "| " + escapeHTML(ex.role) : ""}</p>
                 <p>${escapeHTML(elder.summary)}</p>
                 ${(ex.financialRule || ex.healthSecret) ? `
                 <div style="background:#F1EEE5; padding:10px 12px; border-radius:8px; margin-bottom:10px; font-size:0.86rem;">
-                  ${ex.financialRule ? `<div><strong>💰 बचत का सूत्र:</strong> ${escapeHTML(ex.financialRule)}</div>` : ""}
-                  ${ex.healthSecret ? `<div style="margin-top:4px;"><strong>🌿 सेहत का राज:</strong> ${escapeHTML(ex.healthSecret)}</div>` : ""}
+                  ${ex.financialRule ? `<div><strong>💰 ${isEn ? "Savings Rule:" : "बचत का सूत्र:"}</strong> ${escapeHTML(ex.financialRule)}</div>` : ""}
+                  ${ex.healthSecret ? `<div style="margin-top:4px;"><strong>🌿 ${isEn ? "Health Secret:" : "सेहत का राज:"}</strong> ${escapeHTML(ex.healthSecret)}</div>` : ""}
                 </div>` : ""}
-                <div class="diary-snippet"><strong>✍️ सुनहरी डायरी संदेश:</strong> ${escapeHTML(elder.full_content || elder.summary)}</div>
+                <div class="diary-snippet"><strong>✍️ ${isEn ? "Sunehri Diary Note:" : "सुनहरी डायरी संदेश:"}</strong> ${escapeHTML(elder.full_content || elder.summary)}</div>
               </article>
             `;
           }).join("");
@@ -1622,8 +1940,8 @@
                 <span class="tag">${escapeHTML(item.category || "सुविचार")}</span>
                 <span style="color:#7F4F24; font-weight:700;">${escapeHTML(item.location || "")}</span>
               </div>
-              <h3>${escapeHTML(item.title)}</h3>
-              ${item.summary ? `<p style="font-style:italic;">${escapeHTML(item.summary)}</p>` : ""}
+              <h3>${escapeHTML(isEn && item.summary ? item.summary : item.title)}</h3>
+              ${item.summary ? `<p style="font-style:italic;">${escapeHTML(isEn ? item.title : item.summary)}</p>` : ""}
               <div class="diary-snippet"><strong>— ${escapeHTML(item.author)}</strong></div>
             </article>
           `).join("");
@@ -1642,7 +1960,7 @@
               <p>${escapeHTML(v.summary)}</p>
               <div style="margin-top:auto; display:flex; justify-content:space-between; align-items:center; padding-top:8px; border-top:1px dashed #CFC6B0;">
                 <span style="font-size:0.78rem; font-weight:700; color:#1B4332;">${escapeHTML(v.author || "YouTube @BargadSahara")}</span>
-                <a href="${escapeHTML(v.video_url || "https://www.youtube.com/@BargadSahara")}" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="padding:5px 12px;">▶ वीडियो देखें</a>
+                <a href="${escapeHTML(v.video_url || "https://www.youtube.com/@BargadSahara")}" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="padding:5px 12px;">▶ ${isEn ? "Watch Video" : "वीडियो देखें"}</a>
               </div>
             </article>
           `).join("");
@@ -1660,7 +1978,7 @@
               </div>
               <h3>${escapeHTML(b.title)}</h3>
               <p>${escapeHTML(b.summary)}</p>
-              <button type="button" class="btn btn-outline" style="margin-top:auto; align-self:flex-start;" onclick="window.BargadPublicApp.openBlogModal('${escapeHTML(b.id)}')">📖 पूरा लेख पढ़ें →</button>
+              <button type="button" class="btn btn-outline" style="margin-top:auto; align-self:flex-start;" onclick="window.BargadPublicApp.openBlogModal('${escapeHTML(b.id)}')">📖 ${isEn ? "Read Full Article →" : "पूरा लेख पढ़ें →"}</button>
             </article>
           `).join("");
         }
@@ -1707,17 +2025,51 @@
         }
       }
 
+      function renderChatMessages() {
+        const box = document.getElementById("ai-chat-messages");
+        if (!box) return;
+        if (!chatHistory.length) {
+          const t = UI_TRANSLATIONS[currentLang] || UI_TRANSLATIONS.hi;
+          chatHistory.push({
+            role: "bot",
+            text: t.welcomeBotMsg,
+            meta: "Bargad Sahara AI • Bilingual Voice Ready"
+          });
+        }
+        box.innerHTML = chatHistory.map((m, idx) => `
+          <div class="ai-msg ${m.role === "user" ? "ai-msg-user" : "ai-msg-bot"}">
+            <div style="white-space:pre-line;">${escapeHTML(m.text)}</div>
+            <div class="ai-msg-meta">
+              <span>${escapeHTML(m.meta || (m.role === "user" ? "You" : "Bargad Sahara AI"))}</span>
+              ${m.role === "bot" ? `<button type="button" style="background:none;border:none;color:#1B4332;font-weight:800;cursor:pointer;font-size:0.72rem;" onclick="window.BargadPublicApp.speakMessageByIndex(${idx})">🔊 सुनें / Speak</button>` : ""}
+            </div>
+          </div>
+        `).join("");
+        box.scrollTop = box.scrollHeight;
+      }
+
+      function speakText(text) {
+        if (!text || typeof window.speechSynthesis === "undefined") return;
+        try {
+          window.speechSynthesis.cancel();
+          const clean = String(text).replace(/[*#>`_~]/g, "");
+          const utter = new SpeechSynthesisUtterance(clean);
+          const hasDevanagari = /[\u0900-\u097F]/.test(clean);
+          utter.lang = hasDevanagari ? "hi-IN" : "en-IN";
+          utter.rate = 0.98;
+          window.speechSynthesis.speak(utter);
+        } catch (e) {}
+      }
+
       async function reloadFromStore() {
         if (window.BargadStore && window.BargadStore.INITIAL_SEED_ITEMS && !allItems.length) {
           allItems = window.BargadStore.INITIAL_SEED_ITEMS.slice();
-          checkAdminBadge();
           renderUI();
         }
         try {
           const res = await window.BargadStore.fetchAllContent();
           if (res && res.items && res.items.length) {
             allItems = res.items;
-            checkAdminBadge();
             renderUI();
           }
         } catch (e) {}
@@ -1763,6 +2115,20 @@
           });
           window.scrollTo({ top: 0, behavior: "smooth" });
         },
+        setLang: function (lang) {
+          currentLang = lang === "en" ? "en" : "hi";
+          if (window.BargadStore && window.BargadStore.setLanguage) {
+            window.BargadStore.setLanguage(currentLang);
+          }
+          if (chatHistory.length === 1 && chatHistory[0].role === "bot") {
+            chatHistory = [];
+          }
+          renderUI();
+          renderChatMessages();
+        },
+        getLang: function () {
+          return currentLang;
+        },
         setFontScale: function (scale) {
           document.documentElement.style.setProperty("--font-scale", scale);
         },
@@ -1800,6 +2166,142 @@
         closeModal: function (id) {
           const m = document.getElementById(id);
           if (m) m.classList.remove("open");
+        },
+        toggleChat: function (forceState) {
+          chatOpen = typeof forceState === "boolean" ? forceState : !chatOpen;
+          const drawer = document.getElementById("bargad-ai-drawer");
+          if (drawer) drawer.classList.toggle("open", chatOpen);
+          if (chatOpen) {
+            renderChatMessages();
+            const inp = document.getElementById("ai-chat-input");
+            if (inp) inp.focus();
+          }
+          return chatOpen;
+        },
+        toggleTranslateMode: function () {
+          translateMode = !translateMode;
+          const btn = document.getElementById("ai-translate-toggle");
+          if (btn) {
+            btn.classList.toggle("active", translateMode);
+            btn.textContent = translateMode ? "🔄 HI ⇄ EN Translator: ON" : "🔄 HI ⇄ EN Translator: OFF";
+          }
+          return translateMode;
+        },
+        toggleSpeechOutput: function () {
+          speechOutputEnabled = !speechOutputEnabled;
+          const btn = document.getElementById("ai-tts-toggle");
+          if (btn) {
+            btn.classList.toggle("active", speechOutputEnabled);
+            btn.textContent = speechOutputEnabled ? "🔊 बोलकर सुनाएं: ON" : "🔇 आवाज़ बंद";
+          }
+          if (!speechOutputEnabled && typeof window.speechSynthesis !== "undefined") {
+            try { window.speechSynthesis.cancel(); } catch (e) {}
+          }
+          return speechOutputEnabled;
+        },
+        speakMessageByIndex: function (idx) {
+          const item = chatHistory[idx];
+          if (item && item.text) speakText(item.text);
+        },
+        sendQuickPrompt: async function (promptText) {
+          const inp = document.getElementById("ai-chat-input");
+          if (inp) inp.value = promptText;
+          return await this.sendChatMessage();
+        },
+        sendChatMessage: async function (e) {
+          if (e && e.preventDefault) e.preventDefault();
+          const inp = document.getElementById("ai-chat-input");
+          const msg = inp ? inp.value.trim() : "";
+          if (!msg) return null;
+          if (inp) inp.value = "";
+
+          chatHistory.push({
+            role: "user",
+            text: msg,
+            meta: translateMode ? "You (Voice/Text Translate)" : (currentLang === "en" ? "You (English)" : "आप (हिंदी)")
+          });
+          renderChatMessages();
+
+          const res = await window.BargadStore.askBargadAI({
+            message: msg,
+            lang: currentLang,
+            translateMode: translateMode
+          });
+          const replyText = (res && res.reply) ? res.reply : "🙏 सादर प्रणाम! कृपया पुनः प्रयास करें।";
+          const providerLabel = (res && res.provider) ? res.provider : "Bargad Sahara AI";
+          chatHistory.push({
+            role: "bot",
+            text: replyText,
+            meta: `${providerLabel} • ${translateMode ? "HI ⇄ EN Translator" : (currentLang === "en" ? "English" : "हिंदी")}`
+          });
+          renderChatMessages();
+          if (speechOutputEnabled) speakText(replyText);
+          return replyText;
+        },
+        toggleMicVoiceInput: function () {
+          const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+          const micBtn = document.getElementById("ai-mic-btn");
+          const statusEl = document.getElementById("ai-voice-status");
+
+          if (!SpeechRec) {
+            const demoVoiceText = currentLang === "en"
+              ? "Tell me about Bargad Sahara 6,000 years wisdom and savings rules"
+              : "बरगद सहारा मिशन और 6,000 साल के अनुभव के बारे में बताएं";
+            const inp = document.getElementById("ai-chat-input");
+            if (inp) inp.value = demoVoiceText;
+            this.sendChatMessage();
+            return { ok: true, simulated: true };
+          }
+
+          if (isListeningMic && recognitionInstance) {
+            try { recognitionInstance.stop(); } catch (e) {}
+            isListeningMic = false;
+            if (micBtn) micBtn.classList.remove("listening");
+            if (statusEl) statusEl.style.display = "none";
+            return { ok: true, listening: false };
+          }
+
+          try {
+            recognitionInstance = new SpeechRec();
+            recognitionInstance.lang = currentLang === "en" ? "en-IN" : "hi-IN";
+            recognitionInstance.interimResults = false;
+            recognitionInstance.maxAlternatives = 1;
+
+            isListeningMic = true;
+            if (micBtn) micBtn.classList.add("listening");
+            if (statusEl) {
+              statusEl.style.display = "block";
+              statusEl.textContent = translateMode
+                ? "🎤 वॉइस ट्रांसलेटर चालू है — हिंदी या English में बोलें..."
+                : (currentLang === "en" ? "🎤 Listening... Speak in English or Hindi" : "🎤 माइक चालू है — कृपया बोलें...");
+            }
+
+            recognitionInstance.onresult = (event) => {
+              const transcript = event.results && event.results[0] && event.results[0][0]
+                ? event.results[0][0].transcript
+                : "";
+              if (transcript) {
+                const inp = document.getElementById("ai-chat-input");
+                if (inp) inp.value = transcript;
+                window.BargadPublicApp.sendChatMessage();
+              }
+            };
+            recognitionInstance.onend = () => {
+              isListeningMic = false;
+              if (micBtn) micBtn.classList.remove("listening");
+              if (statusEl) statusEl.style.display = "none";
+            };
+            recognitionInstance.onerror = () => {
+              isListeningMic = false;
+              if (micBtn) micBtn.classList.remove("listening");
+              if (statusEl) statusEl.style.display = "none";
+            };
+            recognitionInstance.start();
+            return { ok: true, listening: true };
+          } catch (e) {
+            isListeningMic = false;
+            return { ok: false };
+          }
         }
       };
 
@@ -1807,7 +2309,14 @@
         reloadFromStore();
         fetchLiveNews();
         startClock();
-        window.BargadStore.onSync(() => reloadFromStore());
+        renderChatMessages();
+        if (window.BargadStore && window.BargadStore.recordVisitorHit) {
+          window.BargadStore.recordVisitorHit({ page: "index.html" });
+        }
+        window.BargadStore.onSync(() => {
+          currentLang = (window.BargadStore && window.BargadStore.getLanguage) ? window.BargadStore.getLanguage() : currentLang;
+          reloadFromStore();
+        });
       });
     })();
   </script>

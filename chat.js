@@ -57,7 +57,7 @@ function findBestAnswer(message, lang = "hi", translateMode = false) {
   for (const entry of BARGAD_KNOWLEDGE_BASE) {
     if (entry.keywords.some((kw) => q.includes(kw))) {
       if (translateMode) {
-        return `${entry.hi}\n\n🌐 **English Translation:**\n${entry.en}`;
+        return `🌐 **हिंदी अनुवाद (Hindi):**\n${entry.hi}\n\n🌐 **English Translation:**\n${entry.en}`;
       }
       return lang === "en" ? entry.en : entry.hi;
     }
@@ -65,7 +65,7 @@ function findBestAnswer(message, lang = "hi", translateMode = false) {
 
   // Default helpful bilingual response + translation
   if (translateMode) {
-    return `🗣️ **आपका संदेश (Hindi/Input):** "${message}"\n🌐 **बरगद सहारा अनुवाद एवं उत्तर (Bilingual Response):**\n🌳 नमस्कार! 'बरगद सहारा' 100 बुजुर्गों के 6,000 साल के अनुभवों को सहेजने का मंच है।\n🌳 **In English:** Welcome to Bargad Sahara — an intergenerational mission preserving 6,000 years of wisdom from 100 elders, rooted in Village Babiyar (Nainital). Ask about *Sunehri Diary*, *Savings Rules*, *Health Secrets*, or *Vlogs*!`;
+    return `🗣️ **आपका संदेश (Input):** "${message}"\n🌐 **हिंदी अनुवाद (Hindi):**\n🌳 नमस्कार! 'बरगद सहारा' 100 बुजुर्गों के 6,000 साल के अनुभवों को सहेजने का मंच है।\n🌐 **English Translation:**\n🌳 Welcome to Bargad Sahara — an intergenerational mission preserving 6,000 years of wisdom from 100 elders, rooted in Village Babiyar (Nainital). Ask about *Sunehri Diary*, *Savings Rules*, *Health Secrets*, or *Vlogs*!`;
   }
 
   return lang === "en"

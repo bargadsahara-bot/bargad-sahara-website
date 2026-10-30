@@ -137,16 +137,21 @@ function summarizeHits(hits) {
 
     const locKey = `${h.city || "Unknown"}, ${h.region || ""} (${h.country || "IN"})`.replace(/,\s+\(/, " (");
     const prev = locMap.get(locKey) || {
+      key: locKey,
       location: locKey,
       city: h.city || "Unknown",
       region: h.region || "",
       country: h.country || "India (IN)",
       count: 0,
+      hits: 0,
       lastVisit: h.timestamp,
+      lastSeen: h.timestamp,
     };
     prev.count++;
+    prev.hits = prev.count;
     if (new Date(h.timestamp || 0) > new Date(prev.lastVisit || 0)) {
       prev.lastVisit = h.timestamp;
+      prev.lastSeen = h.timestamp;
     }
     locMap.set(locKey, prev);
   }
@@ -160,6 +165,8 @@ function summarizeHits(hits) {
     desktopCount,
     hiCount,
     enCount,
+    devices: { Mobile: mobileCount, Desktop: desktopCount },
+    languages: { hi: hiCount, en: enCount },
     locations,
     recentHits: hits.slice(0, 50),
   };
@@ -243,9 +250,11 @@ module.exports = async function handler(req, res) {
       }
     } catch (e) {}
 
+    const summary = summarizeHits(allHits);
     return res.status(200).json({
       ok: true,
-      ...summarizeHits(allHits),
+      ...summary,
+      summary,
     });
   }
 
