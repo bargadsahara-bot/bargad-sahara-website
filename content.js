@@ -1,5 +1,10 @@
-const { MongoClient } = require("mongodb");
-const { verifyToken, ALLOWED_ADMIN_EMAILS } = require("./auth");
+let MongoClient = null;
+try {
+  ({ MongoClient } = require("mongodb"));
+} catch (e) {
+  // Graceful fallback if mongodb package is not installed in environment
+}
+const { verifyToken } = require("./auth");
 
 /**
  * 🌳 BARGAD SAHARA — BACKEND MONGODB ATLAS DATABASE API (/api/content)
@@ -150,11 +155,11 @@ module.exports = async function handler(req, res) {
   // 2. STRICT ADMIN RESTRICTION FOR ALL WRITE OPERATIONS (POST / PUT / DELETE)
   // ==========================================================================
   const adminUser = verifyAdminRequest(req);
-  if (!adminUser) {
+  if (!adminUser || (adminUser.role !== "SUPER_ADMIN" && adminUser.role !== "EDITOR")) {
     return res.status(403).json({
       ok: false,
       error:
-        "एक्सेस अस्वीकृत (403 Forbidden): केवल लॉगिन किए हुए अधिकृत एडमिन (bargadsahara@gmail.com) ही MongoDB डेटाबेस में कंटेंट या फोटो जोड़, बदल या हटा सकते हैं।",
+        "एक्सेस अस्वीकृत (403 Forbidden): केवल लॉगिन किए हुए अधिकृत एडमिन या एडिटर ही MongoDB डेटाबेस में कंटेंट या फोटो जोड़, बदल या हटा सकते हैं।",
     });
   }
 

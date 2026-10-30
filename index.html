@@ -610,11 +610,239 @@
       font-weight: bold;
     }
 
+    /* 5. LANGUAGE SWITCHER & FLOATING AI CHATBOT + VOICE TRANSLATOR */
+    .lang-switch-pill {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--gold-400);
+      border-radius: 999px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .lang-btn {
+      background: transparent;
+      border: none;
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--text-body);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.16s ease;
+    }
+    .lang-btn.active {
+      background: var(--banyan-800);
+      color: var(--gold-500);
+    }
+
+    .ai-fab-launcher {
+      position: fixed;
+      bottom: 48px;
+      right: 22px;
+      z-index: 1900;
+      background: linear-gradient(135deg, var(--banyan-900) 0%, var(--banyan-800) 100%);
+      color: var(--gold-500);
+      border: 2px solid var(--gold-400);
+      border-radius: 999px;
+      padding: 11px 18px;
+      font-weight: 800;
+      font-size: 0.86rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(9, 30, 21, 0.32);
+      font-family: inherit;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .ai-fab-launcher:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 34px rgba(9, 30, 21, 0.42);
+    }
+
+    .ai-chat-drawer {
+      position: fixed;
+      bottom: 102px;
+      right: 22px;
+      width: 390px;
+      max-width: calc(100vw - 28px);
+      height: 540px;
+      max-height: calc(100vh - 140px);
+      background: var(--bg-surface);
+      border: 2px solid var(--gold-400);
+      border-radius: 20px;
+      box-shadow: 0 18px 48px rgba(9, 30, 21, 0.28);
+      z-index: 1950;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .ai-chat-drawer.open { display: flex; }
+
+    .ai-chat-header {
+      background: linear-gradient(135deg, var(--banyan-950) 0%, var(--banyan-800) 100%);
+      color: #FFFFFF;
+      padding: 13px 16px;
+      border-bottom: 2px solid var(--gold-400);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .ai-chat-toolbar {
+      background: #F4EFE3;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+      font-size: 0.73rem;
+    }
+    .ai-tool-chip {
+      background: #FFFFFF;
+      border: 1px solid var(--border-med);
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--banyan-800);
+      font-family: inherit;
+    }
+    .ai-tool-chip.active {
+      background: var(--banyan-800);
+      color: var(--gold-500);
+      border-color: var(--banyan-800);
+    }
+
+    .ai-prompts-strip {
+      padding: 8px 12px;
+      background: #FAF8F4;
+      border-bottom: 1px solid var(--border-soft);
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .ai-prompts-strip::-webkit-scrollbar { display: none; }
+    .ai-prompt-btn {
+      background: #FFFFFF;
+      border: 1px solid var(--gold-400);
+      color: var(--banyan-800);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.73rem;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .ai-prompt-btn:hover {
+      background: var(--banyan-800);
+      color: #FFFFFF;
+    }
+
+    .ai-chat-messages {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #FCFBF8;
+    }
+    .ai-msg {
+      max-width: 88%;
+      padding: 10px 13px;
+      border-radius: 14px;
+      font-size: 0.84rem;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+    .ai-msg-bot {
+      align-self: flex-start;
+      background: #FFFFFF;
+      border: 1px solid var(--border-soft);
+      border-left: 4px solid var(--banyan-800);
+      color: var(--text-main);
+    }
+    .ai-msg-user {
+      align-self: flex-end;
+      background: var(--banyan-800);
+      color: #FFFFFF;
+    }
+
+    .ai-chat-input-bar {
+      padding: 10px 12px;
+      background: #FFFFFF;
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ai-mic-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1.5px solid var(--earth-700);
+      background: #FBF3E8;
+      color: var(--earth-700);
+      font-size: 1rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ai-mic-btn.listening {
+      background: #DC2626;
+      color: #FFFFFF;
+      border-color: #DC2626;
+      animation: liveBlink 1s infinite;
+    }
+    .ai-chat-input {
+      flex: 1;
+      border: 1.5px solid var(--border-med);
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 0.84rem;
+      font-family: inherit;
+      outline: none;
+    }
+    .ai-chat-input:focus { border-color: var(--banyan-800); }
+    .ai-send-btn {
+      background: var(--banyan-800);
+      color: var(--gold-500);
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
     @media (max-width: 1024px) {
       .frontpage-grid { grid-template-columns: 1fr; }
       .hero-pillars-grid { grid-template-columns: 1fr; }
       .grid-2 { grid-template-columns: 1fr; }
       .news-right-clock { display: none; }
+      .nav-container { flex-wrap: wrap; padding: 10px 16px; }
+      .page-nav { order: 3; width: 100%; justify-content: flex-start; }
+    }
+
+    @media (max-width: 640px) {
+      .hero-showcase-panel { padding: 22px 18px; }
+      .hero-main-title { font-size: 1.65rem; }
+      .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .viewport-container { padding: 14px 12px 24px; }
+      .brand-title { font-size: 1.05rem; }
+      .ai-chat-drawer { right: 10px; bottom: 94px; width: calc(100vw - 20px); }
+      .ai-fab-launcher { right: 12px; bottom: 42px; padding: 9px 14px; font-size: 0.8rem; }
     }
   </style>
 </head>
@@ -709,6 +937,11 @@
       </nav>
 
       <div class="header-actions">
+        <div class="lang-switch-pill" role="group" aria-label="Language Preference / भाषा चुनें">
+          <button type="button" id="lang-btn-hi" class="lang-opt active" onclick="window.BargadPublicApp.setLang('hi')" title="हिंदी भाषा">🇮🇳 हिंदी</button>
+          <button type="button" id="lang-btn-en" class="lang-opt" onclick="window.BargadPublicApp.setLang('en')" title="English Language">🌐 EN</button>
+        </div>
+        <button type="button" class="btn btn-outline" onclick="window.BargadPublicApp.toggleChat(true)" id="header-ai-btn" title="AI सहायक और वॉइस ट्रांसलेटर">🤖 AI सहायक / Voice</button>
         <a href="admin.html" id="header-admin-btn" class="btn btn-outline" title="केवल अधिकृत एडमिन जीमेल लॉगिन">🔒 एडमिन पोर्टल (Admin)</a>
         <a href="https://www.youtube.com/@BargadSahara" target="_blank" rel="noopener noreferrer" class="btn btn-primary">▶ @BargadSahara</a>
       </div>
@@ -1114,17 +1347,28 @@
             req.onerror = () => resolve(null);
           });
         }
+        const LOCAL_ITEMS_KEY = "bargad_local_items_v2";
         async function getLocalItems() {
+          const map = new Map();
+          try {
+            const arr = JSON.parse(localStorage.getItem(LOCAL_ITEMS_KEY) || "[]");
+            if (Array.isArray(arr)) {
+              for (const x of arr) { if (x && x.id) map.set(x.id, x); }
+            }
+          } catch (e) {}
           const db = await openLocalDB();
-          if (!db) return [];
-          return new Promise((resolve) => {
-            try {
-              const tx = db.transaction(["items"], "readonly");
-              const req = tx.objectStore("items").getAll();
-              req.onsuccess = () => resolve(req.result || []);
-              req.onerror = () => resolve([]);
-            } catch (e) { resolve([]); }
-          });
+          if (db) {
+            const idbItems = await new Promise((resolve) => {
+              try {
+                const tx = db.transaction(["items"], "readonly");
+                const req = tx.objectStore("items").getAll();
+                req.onsuccess = () => resolve(req.result || []);
+                req.onerror = () => resolve([]);
+              } catch (e) { resolve([]); }
+            });
+            for (const x of idbItems) { if (x && x.id) map.set(x.id, x); }
+          }
+          return Array.from(map.values());
         }
         function getDeletedSeedIds() {
           try { return JSON.parse(localStorage.getItem(DELETED_SEEDS_KEY) || "[]"); } catch (e) { return []; }
@@ -1151,7 +1395,12 @@
             const raw = localStorage.getItem(SESSION_KEY);
             if (!raw) return null;
             const session = JSON.parse(raw);
-            if (!session || !session.email || !ALLOWED_ADMIN_EMAILS.includes(session.email.toLowerCase())) return null;
+            if (!session || !session.email) return null;
+            const cleanEmail = session.email.toLowerCase();
+            const savedUsers = JSON.parse(localStorage.getItem("bargad_admin_users_v2") || "[]");
+            const found = Array.isArray(savedUsers) ? savedUsers.find(u => u && u.email && u.email.toLowerCase() === cleanEmail) : null;
+            if (found && found.status === "blocked") return null;
+            if (!found && !ALLOWED_ADMIN_EMAILS.includes(cleanEmail)) return null;
             return session;
           } catch (e) { return null; }
         }

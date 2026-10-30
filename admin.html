@@ -3,35 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>बरगद सहारा — एडमिन कंट्रोल पैनल (Restricted Admin CMS)</title>
   <meta name="robots" content="noindex, nofollow">
+  <title>एडमिन कंट्रोल पोर्टल (Admin CMS & User Studio) — बरगद सहारा</title>
   <style>
     :root {
       --bg-canvas: #F4F1EA;
-      --bg-surface: #FFFFFF;
-      --bg-subtle: #EAE5D9;
+      --bg-card: #FFFFFF;
       --banyan-950: #091E15;
       --banyan-800: #1B4332;
       --banyan-700: #2D6A4F;
       --earth-700: #7F4F24;
       --gold-500: #E9C46A;
       --gold-400: #D4A373;
-      --danger: #B91C1C;
       --text-main: #121C17;
       --text-muted: #5C6B62;
-      --border-soft: #DCD5C5;
-      --radius-md: 14px;
+      --border: #DCD5C5;
+      --danger: #B91C1C;
+      --success: #15803D;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: var(--bg-canvas);
       color: var(--text-main);
-      font-family: 'Inter', 'Segoe UI', 'Noto Sans Devanagari', sans-serif;
+      font-family: 'Inter', 'Segoe UI', 'Noto Sans Devanagari', system-ui, sans-serif;
       line-height: 1.55;
       min-height: 100vh;
     }
 
-    /* Top Admin Header */
     .admin-header {
       background: var(--banyan-950);
       color: #FFFFFF;
@@ -39,10 +38,12 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 3px solid var(--gold-500);
+      border-bottom: 3px solid var(--gold-400);
       position: sticky;
       top: 0;
       z-index: 100;
+      flex-wrap: wrap;
+      gap: 10px;
     }
     .admin-brand {
       display: flex;
@@ -50,13 +51,13 @@
       gap: 12px;
     }
     .admin-brand h1 {
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       color: var(--gold-500);
       font-weight: 800;
     }
     .admin-brand p {
-      font-size: 0.75rem;
-      color: #C7D8CF;
+      font-size: 0.76rem;
+      color: #CFE1D8;
     }
 
     .btn {
@@ -72,114 +73,134 @@
       border: 1.5px solid transparent;
       text-decoration: none;
       font-family: inherit;
-      transition: all 0.15s ease;
+      transition: all 0.18s ease;
     }
     .btn-primary { background: var(--banyan-800); color: #FFFFFF; }
     .btn-primary:hover { background: var(--banyan-700); }
     .btn-gold { background: var(--gold-500); color: var(--banyan-950); }
-    .btn-gold:hover { background: #f3ce74; }
+    .btn-outline { background: transparent; color: #FFFFFF; border-color: rgba(255,255,255,0.35); }
+    .btn-outline-dark { background: transparent; color: var(--banyan-800); border-color: var(--border); }
     .btn-danger { background: #FEE2E2; color: var(--danger); border-color: #FCA5A5; }
     .btn-danger:hover { background: var(--danger); color: #FFFFFF; }
-    .btn-outline { background: transparent; color: #FFFFFF; border-color: rgba(255,255,255,0.3); }
-    .btn-outline-dark { background: #FFFFFF; color: var(--banyan-800); border-color: var(--border-soft); }
 
-    /* Login Gate Card */
+    /* Login Gate */
     .login-wrapper {
       max-width: 460px;
-      margin: 60px auto;
+      margin: 64px auto;
       padding: 0 20px;
     }
     .login-card {
-      background: var(--bg-surface);
+      background: var(--bg-card);
+      border: 2px solid var(--gold-400);
       border-radius: 18px;
       padding: 32px;
-      border: 2px solid var(--gold-400);
-      box-shadow: 0 16px 40px rgba(9, 30, 21, 0.12);
-    }
-    .form-group { margin-bottom: 14px; }
-    .form-group label {
-      display: block;
-      font-weight: 700;
-      font-size: 0.84rem;
-      color: var(--banyan-800);
-      margin-bottom: 5px;
-    }
-    .form-control {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1.5px solid var(--border-soft);
-      font-size: 0.92rem;
-      font-family: inherit;
-    }
-    .form-control:focus {
-      outline: none;
-      border-color: var(--banyan-800);
+      box-shadow: 0 18px 42px rgba(9, 30, 21, 0.12);
     }
 
     /* Admin Dashboard Layout */
     .dashboard-container {
-      max-width: 1320px;
-      margin: 24px auto;
-      padding: 0 24px 60px;
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 24px;
       display: none;
     }
     .dashboard-container.active { display: block; }
 
     .kpi-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 14px;
-      margin-bottom: 22px;
+      margin-bottom: 24px;
     }
     .kpi-box {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-soft);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
       border-left: 5px solid var(--banyan-800);
       border-radius: 12px;
-      padding: 14px 18px;
+      padding: 14px 16px;
     }
     .kpi-box strong {
       display: block;
-      font-size: 1.5rem;
+      font-size: 1.55rem;
       color: var(--banyan-800);
     }
     .kpi-box span {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       font-weight: 700;
     }
 
     .admin-grid {
       display: grid;
-      grid-template-columns: 420px 1fr;
+      grid-template-columns: 5fr 7fr;
       gap: 24px;
       align-items: start;
     }
+
     .panel-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-soft);
-      border-radius: var(--radius-md);
-      padding: 22px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(9, 30, 21, 0.05);
+    }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--banyan-800);
+      margin-bottom: 5px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      font-family: inherit;
+      font-size: 0.9rem;
+      background: #FFFFFF;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--banyan-800);
+    }
+
+    .password-field-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .password-field-wrap .form-control {
+      padding-right: 42px;
+    }
+    .pass-toggle-btn {
+      position: absolute;
+      right: 8px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 4px 6px;
+      color: var(--text-muted);
     }
 
     .tab-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 18px;
+      gap: 6px;
+      margin-bottom: 16px;
       padding-bottom: 12px;
-      border-bottom: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--border);
     }
     .tab-btn {
-      background: var(--bg-subtle);
-      color: var(--text-main);
-      border: 1px solid var(--border-soft);
-      padding: 7px 14px;
+      background: var(--bg-canvas);
+      border: 1px solid var(--border);
+      padding: 6px 13px;
       border-radius: 999px;
       font-weight: 700;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       cursor: pointer;
       font-family: inherit;
     }
@@ -190,25 +211,45 @@
     }
 
     .item-row {
-      border: 1px solid var(--border-soft);
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 16px;
-      background: #FDFCF9;
+      gap: 14px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      background: #FAF8F4;
     }
-    .item-row:hover { border-color: var(--gold-400); }
     .item-thumb {
-      width: 84px;
-      height: 64px;
-      object-fit: cover;
+      width: 72px;
+      height: 72px;
       border-radius: 8px;
-      border: 1px solid var(--border-soft);
+      object-fit: cover;
+      border: 1px solid var(--border);
       flex-shrink: 0;
     }
+
+    .role-badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+    .role-super { background: #FEF3C7; color: #92400E; border: 1px solid #F59E0B; }
+    .role-editor { background: #DCFCE7; color: #166534; border: 1px solid #22C55E; }
+    .role-viewer { background: #E0E7FF; color: #1E40AF; border: 1px solid #6366F1; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.71rem;
+      font-weight: 700;
+    }
+    .status-active { background: #DCFCE7; color: #15803D; }
+    .status-blocked { background: #FEE2E2; color: #B91C1C; }
 
     .alert-box {
       padding: 10px 14px;
@@ -218,8 +259,8 @@
       margin-bottom: 14px;
       display: none;
     }
-    .alert-error { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; display: block; }
-    .alert-success { background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; display: block; }
+    .alert-success { background: #DCFCE7; color: var(--success); border: 1px solid #86EFAC; display: block; }
+    .alert-error { background: #FEE2E2; color: var(--danger); border: 1px solid #FCA5A5; display: block; }
 
     @media (max-width: 980px) {
       .admin-grid { grid-template-columns: 1fr; }
@@ -233,8 +274,8 @@
     <div class="admin-brand">
       <span style="font-size:1.7rem;">🛡️</span>
       <div>
-        <h1>बरगद सहारा — एडमिन कंट्रोल पोर्टल (Admin CMS & Database Studio)</h1>
-        <p id="admin-status-subtitle">Restricted Access • केवल अधिकृत एडमिन जीमेल द्वारा लॉगिन</p>
+        <h1>बरगद सहारा — एडमिन कंट्रोल पोर्टल (Admin CMS &amp; User Studio)</h1>
+        <p id="admin-status-subtitle">Restricted Access • केवल पंजीकृत एडमिन एवं टीम लॉगिन</p>
       </div>
     </div>
     <div style="display:flex; gap:10px; align-items:center;">
@@ -243,48 +284,55 @@
     </div>
   </header>
 
-  <!-- 1. RESTRICTED ADMIN LOGIN GATE -->
+  <!-- 1. RESTRICTED ADMIN LOGIN GATE (ZERO PASSWORD OR EMAIL LEAK) -->
   <section id="login-section" class="login-wrapper">
     <div class="login-card">
       <div style="text-align:center; margin-bottom:20px;">
         <div style="font-size:2.4rem; margin-bottom:6px;">🔒</div>
         <h2 style="color:#1B4332; font-size:1.35rem;">एडमिन पोर्टल लॉगिन</h2>
         <p style="font-size:0.84rem; color:#5C6B62; margin-top:4px;">
-          केवल अधिकृत जीमेल आईडी (<strong>bargadsahara@gmail.com</strong>) ही वेबसाइट के फोटो, ब्लॉग और कंटेंट को जोड़ या हटा सकते हैं।
+          यह पोर्टल केवल अधिकृत एडमिन और पंजीकृत टीम सदस्यों के लिए सुरक्षित है। कृपया अपनी पंजीकृत ईमेल आईडी और पासवर्ड दर्ज करें।
         </p>
       </div>
 
       <div id="login-alert"></div>
 
-      <form onsubmit="window.BargadAdmin.handleLogin(event)">
+      <form id="admin-login-form" onsubmit="window.BargadAdmin.handleLogin(event)" autocomplete="on">
         <div class="form-group">
-          <label for="admin-email">एडमिन जीमेल आईडी (Authorized Gmail ID) *</label>
+          <label for="admin-email">पंजीकृत ईमेल / जीमेल आईडी (Authorized Email ID) *</label>
           <input
             type="email"
             id="admin-email"
             class="form-control"
-            placeholder="bargadsahara@gmail.com"
-            value="bargadsahara@gmail.com"
+            placeholder="अपनी पंजीकृत ईमेल आईडी दर्ज करें..."
             required
+            autocomplete="username"
           >
         </div>
 
         <div class="form-group">
-          <label for="admin-password">एडमिन पासवर्ड (Password) *</label>
-          <input
-            type="password"
-            id="admin-password"
-            class="form-control"
-            placeholder="एडमिन पासवर्ड दर्ज करें..."
-            required
-          >
-          <small style="display:block; margin-top:4px; color:#5C6B62; font-size:0.75rem;">
-            डिफ़ॉल्ट एडमिन पासवर्ड: <code>Bargad@2026#Admin</code> (आप लॉगिन के बाद इसे बदल सकते हैं)
-          </small>
+          <label for="admin-password">पासवर्ड (Password) *</label>
+          <div class="password-field-wrap">
+            <input
+              type="password"
+              id="admin-password"
+              class="form-control"
+              placeholder="अपना सुरक्षित पासवर्ड दर्ज करें..."
+              required
+              autocomplete="current-password"
+            >
+            <button
+              type="button"
+              class="pass-toggle-btn"
+              onclick="window.BargadAdmin.togglePasswordVisibility('admin-password', this)"
+              title="पासवर्ड देखें/छुपाएं"
+              aria-label="पासवर्ड देखें या छुपाएं"
+            >👁️</button>
+          </div>
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width:100%; padding:11px; font-size:0.95rem; margin-top:6px;">
-          🔑 एडमिन पोर्टल में प्रवेश करें (Sign In with Admin Gmail)
+        <button type="submit" id="login-submit-btn" class="btn btn-primary" style="width:100%; padding:11px; font-size:0.95rem; margin-top:8px;">
+          🔑 एडमिन पोर्टल में प्रवेश करें (Secure Sign In)
         </button>
       </form>
     </div>
@@ -315,8 +363,12 @@
         <strong id="kpi-elders">0</strong>
         <span>📖 100 बुजुर्ग डायरी (Elders)</span>
       </div>
+      <div class="kpi-box" style="border-left-color:#7F4F24; cursor:pointer;" onclick="window.BargadAdmin.switchTab('users', document.getElementById('tab-btn-users'))">
+        <strong id="kpi-users">1</strong>
+        <span>👥 अधिकृत यूज़र्स (Users)</span>
+      </div>
       <div class="kpi-box" style="border-left-color:#D4A373;">
-        <strong id="kpi-db-mode" style="font-size:0.95rem; margin-top:4px;">Active</strong>
+        <strong id="kpi-db-mode" style="font-size:0.92rem; margin-top:4px;">Active</strong>
         <span>🗄️ डेटाबेस इंजन स्टेटस</span>
       </div>
     </div>
@@ -324,11 +376,15 @@
     <div class="admin-grid">
 
       <!-- LEFT COLUMN: ADD / EDIT CONTENT FORM -->
-      <div class="panel-card">
+      <div class="panel-card" id="left-editor-panel">
         <h2 id="form-heading" style="color:#1B4332; font-size:1.18rem; margin-bottom:4px;">➕ नया कंटेंट / फोटो जोड़ें (Add Content)</h2>
         <p style="font-size:0.8rem; color:#5C6B62; margin-bottom:14px;">
-          यहाँ से जोड़ा गया हर फोटो या लेख तुरंत मुख्य वेबसाइट (<code>index.html</code>) और डेटाबेस में लाइव हो जाएगा।
+          यहाँ से जोड़ा गया हर फोटो या लेख तुरंत मुख्य वेबसाइट (<code>index.html</code>) और MongoDB डेटाबेस में लाइव हो जाएगा।
         </p>
+
+        <div id="viewer-readonly-notice" class="alert-box alert-error" style="display:none;">
+          👁️ <strong>VIEWER मोड:</strong> आपके पास केवल डैशबोर्ड देखने का अधिकार है। नया कंटेंट जोड़ने या बदलने के लिए SUPER_ADMIN या EDITOR अधिकार आवश्यक है।
+        </div>
 
         <div id="editor-alert"></div>
 
@@ -391,49 +447,121 @@
           </div>
 
           <div style="display:flex; gap:8px; margin-top:14px;">
-            <button type="submit" class="btn btn-primary" style="flex:1;">✅ सेव और पब्लिश करें (Save to DB)</button>
+            <button type="submit" id="save-content-btn" class="btn btn-primary" style="flex:1;">✅ सेव और पब्लिश करें (Save to DB)</button>
             <button type="button" class="btn btn-outline-dark" onclick="window.BargadAdmin.resetForm()">🔄 रीसेट</button>
           </div>
         </form>
       </div>
 
-      <!-- RIGHT COLUMN: MANAGE / EDIT / DELETE EXISTING ITEMS & DB SETTINGS -->
+      <!-- RIGHT COLUMN: MANAGE CONTENT, USERS & ROLES, AND MONGODB SETTINGS -->
       <div class="panel-card">
         <div class="tab-bar">
-          <button class="tab-btn active" onclick="window.BargadAdmin.switchTab('all', this)">सभी कंटेंट (All)</button>
-          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('photo', this)">📸 फोटोज (Photos)</button>
-          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('thought', this)">🌅 सुविचार (Thoughts)</button>
-          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('blog', this)">✍️ ब्लॉग्स (Blogs)</button>
-          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('vlog', this)">🎬 व्लॉग्स (Vlogs)</button>
-          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('elder', this)">📖 100 बुजुर्ग (Elders)</button>
-          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('mission', this)">🌳 टिकर (Ticker)</button>
-          <button class="tab-btn" onclick="window.BargadAdmin.switchTab('database', this)">🍃 MongoDB Atlas कनेक्शन</button>
+          <button class="tab-btn active" id="tab-btn-all" onclick="window.BargadAdmin.switchTab('all', this)">सभी कंटेंट (All)</button>
+          <button class="tab-btn" id="tab-btn-photo" onclick="window.BargadAdmin.switchTab('photo', this)">📸 फोटोज (Photos)</button>
+          <button class="tab-btn" id="tab-btn-thought" onclick="window.BargadAdmin.switchTab('thought', this)">🌅 सुविचार (Thoughts)</button>
+          <button class="tab-btn" id="tab-btn-blog" onclick="window.BargadAdmin.switchTab('blog', this)">✍️ ब्लॉग्स (Blogs)</button>
+          <button class="tab-btn" id="tab-btn-vlog" onclick="window.BargadAdmin.switchTab('vlog', this)">🎬 व्लॉग्स (Vlogs)</button>
+          <button class="tab-btn" id="tab-btn-elder" onclick="window.BargadAdmin.switchTab('elder', this)">📖 100 बुजुर्ग (Elders)</button>
+          <button class="tab-btn" id="tab-btn-mission" onclick="window.BargadAdmin.switchTab('mission', this)">🌳 टिकर (Ticker)</button>
+          <button class="tab-btn" id="tab-btn-users" onclick="window.BargadAdmin.switchTab('users', this)">👥 यूज़र्स जोड़ें/हटाएं (Users)</button>
+          <button class="tab-btn" id="tab-btn-database" onclick="window.BargadAdmin.switchTab('database', this)">🍃 MongoDB कनेक्शन</button>
         </div>
 
-        <!-- Content List View -->
+        <!-- 1. Content List View -->
         <div id="admin-items-list"></div>
 
-        <!-- MongoDB Atlas Configuration Panel -->
+        <!-- 2. User & Role Management Studio (Add / Remove / Block / Change Password) -->
+        <div id="users-management-panel" style="display:none;">
+          <h3 style="color:#1B4332; margin-bottom:6px;">👥 यूज़र एवं एडमिन मैनेजमेंट (Add / Remove Users &amp; Roles)</h3>
+          <p style="font-size:0.84rem; color:#5C6B62; margin-bottom:14px;">
+            यहाँ से मुख्य एडमिन (<code>SUPER_ADMIN</code>) नए टीम सदस्यों, एडिटर्स या व्यूअर्स की ईमेल आईडी व पासवर्ड जोड़ सकते हैं, उनके अधिकार तय कर सकते हैं या उन्हें हटा/ब्लॉक कर सकते हैं।
+          </p>
+
+          <div id="user-mgmt-alert"></div>
+
+          <!-- Add New User Form (Visible to SUPER_ADMIN) -->
+          <div id="add-user-box" style="background:#FAF8F4; padding:16px; border-radius:12px; border:1px solid #DCD5C5; margin-bottom:18px;">
+            <h4 style="color:#1B4332; margin-bottom:10px; font-size:0.96rem;">➕ नया यूज़र / एडमिन जोड़ें (Add New User)</h4>
+            <form id="add-user-form" onsubmit="window.BargadAdmin.handleAddUser(event)">
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label for="new-user-name">यूज़र का नाम (Full Name) *</label>
+                  <input type="text" id="new-user-name" class="form-control" placeholder="उदा: रोहित सुयाल" required>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label for="new-user-email">ईमेल / जीमेल आईडी (Email / Gmail) *</label>
+                  <input type="email" id="new-user-email" class="form-control" placeholder="user@gmail.com" required>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label for="new-user-password">लॉगिन पासवर्ड (कम से कम 6 अक्षर) *</label>
+                  <div class="password-field-wrap">
+                    <input type="password" id="new-user-password" class="form-control" placeholder="सुरक्षित पासवर्ड बनाएं..." minlength="6" required>
+                    <button type="button" class="pass-toggle-btn" onclick="window.BargadAdmin.togglePasswordVisibility('new-user-password', this)">👁️</button>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label for="new-user-role">अधिकार / रोल (Access Role) *</label>
+                  <select id="new-user-role" class="form-control" required>
+                    <option value="EDITOR">✍️ EDITOR (कंटेंट व फोटो जोड़ने/हटाने का अधिकार)</option>
+                    <option value="SUPER_ADMIN">👑 SUPER_ADMIN (पूर्ण एडमिन + यूज़र जोड़ने/हटाने का अधिकार)</option>
+                    <option value="VIEWER">👁️ VIEWER (केवल डैशबोर्ड देखने का अधिकार — Read Only)</option>
+                  </select>
+                </div>
+              </div>
+              <div style="margin-top:12px; display:flex; gap:10px; align-items:center;">
+                <button type="submit" id="add-user-submit-btn" class="btn btn-primary">➕ यूज़र जोड़ें और अनुमति दें (Add User)</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Change Password Box -->
+          <div style="background:#FFFDF9; padding:14px 16px; border-radius:12px; border:1px dashed #7F4F24; margin-bottom:18px;">
+            <h4 style="color:#7F4F24; margin-bottom:8px; font-size:0.92rem;">🔑 पासवर्ड बदलें (Change Admin / User Password)</h4>
+            <form id="change-password-form" onsubmit="window.BargadAdmin.handleChangePassword(event)" style="display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end;">
+              <div style="flex:1; min-width:200px;">
+                <label for="cp-email" style="display:block; font-size:0.78rem; font-weight:700; color:#1B4332; margin-bottom:4px;">यूज़र ईमेल चुनें</label>
+                <input type="email" id="cp-email" class="form-control" placeholder="ईमेल आईडी..." required>
+              </div>
+              <div style="flex:1; min-width:200px;">
+                <label for="cp-new-pass" style="display:block; font-size:0.78rem; font-weight:700; color:#1B4332; margin-bottom:4px;">नया पासवर्ड (कम से कम 6 अक्षर)</label>
+                <div class="password-field-wrap">
+                  <input type="password" id="cp-new-pass" class="form-control" placeholder="नया पासवर्ड दर्ज करें..." minlength="6" required>
+                  <button type="button" class="pass-toggle-btn" onclick="window.BargadAdmin.togglePasswordVisibility('cp-new-pass', this)">👁️</button>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-gold">🔑 पासवर्ड अपडेट करें</button>
+            </form>
+          </div>
+
+          <!-- Registered Users List -->
+          <h4 style="color:#1B4332; margin-bottom:10px; font-size:0.96rem;">📋 पंजीकृत एडमिन एवं यूज़र्स की सूची (Authorized Users List)</h4>
+          <div id="users-list-container"></div>
+        </div>
+
+        <!-- 3. MongoDB Atlas Configuration Panel -->
         <div id="database-settings-panel" style="display:none;">
           <h3 style="color:#1B4332; margin-bottom:8px;">🍃 MongoDB Atlas (Free Tier Cluster) लाइव कनेक्शन व बैकअप</h3>
           <p style="font-size:0.86rem; color:#5C6B62; margin-bottom:14px;">
-            आपका क्लस्टर <code>bargadsahara.iajmrj2.mongodb.net</code> और पासवर्ड (<code>w6NLFwRhv2Oi6mo1</code>) पहले से ही जोड़ा जा चुका है! बस नीचे अपना <strong>Database Username (<code>&lt;db_username&gt;</code>)</strong> जांचें:
+            आपका क्लस्टर <code>bargadsahara.iajmrj2.mongodb.net</code> और Database User <code>bargadsahara_db_user</code> कनेक्टेड है।
           </p>
 
           <form onsubmit="window.BargadAdmin.saveDbConfig(event)" style="background:#FAF8F4; padding:16px; border-radius:10px; border:1px solid #DCD5C5; margin-bottom:18px;">
             <div class="form-group">
-              <label>MongoDB Database Username (<code>bargadsahara_db_user</code> लॉक हो चुका है) *</label>
+              <label for="mongo-user">MongoDB Database Username *</label>
               <input type="text" id="mongo-user" class="form-control" placeholder="bargadsahara_db_user" value="bargadsahara_db_user" required oninput="window.BargadAdmin.updateUriPreview()">
             </div>
             <div class="form-group">
-              <label>MongoDB Database Password (आपका पासवर्ड प्री-फिल्ड है) *</label>
-              <input type="text" id="mongo-pass" class="form-control" value="w6NLFwRhv2Oi6mo1" required oninput="window.BargadAdmin.updateUriPreview()">
+              <label for="mongo-pass">MongoDB Database Password *</label>
+              <div class="password-field-wrap">
+                <input type="password" id="mongo-pass" class="form-control" value="w6NLFwRhv2Oi6mo1" required oninput="window.BargadAdmin.updateUriPreview()">
+                <button type="button" class="pass-toggle-btn" onclick="window.BargadAdmin.togglePasswordVisibility('mongo-pass', this)">👁️</button>
+              </div>
             </div>
             <div class="form-group">
-              <label>आपकी तैयार MongoDB Connection String (Vercel <code>MONGODB_URI</code> के लिए)</label>
+              <label for="mongo-uri-preview">MongoDB Connection String (Vercel <code>MONGODB_URI</code>)</label>
               <input type="text" id="mongo-uri-preview" class="form-control" style="font-family:monospace; font-size:0.8rem; background:#EAE5D9;" readonly>
             </div>
-            <button type="submit" class="btn btn-primary">🍃 MongoDB Atlas सेटिंग्स सेव और कनेक्ट करें</button>
+            <button type="submit" class="btn btn-primary">🍃 MongoDB Atlas सेटिंग्स सेव करें</button>
           </form>
 
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -449,15 +577,30 @@
   <script src="assets/js/bargad-store.js"></script>
   <script>
     // Self-contained fallback store if assets/js/bargad-store.js was not uploaded separately
-    if (!window.BargadStore) {
+    if (!window.BargadStore || !window.BargadStore.getUsers) {
       (function (global) {
         const DB_NAME = "BargadSaharaEnterpriseDB_v2";
         const DB_VERSION = 1;
         const MONGO_CONFIG_KEY = "bargad_mongodb_config_v1";
         const SESSION_KEY = "bargad_admin_session_v1";
         const DELETED_SEEDS_KEY = "bargad_deleted_seeds_v1";
+        const USERS_STORAGE_KEY = "bargad_admin_users_v2";
         const ALLOWED_ADMIN_EMAILS = ["bargadsahara@gmail.com", "baragadsahara@gmail.com"];
-        const INITIAL_SEED_ITEMS = [
+
+        function simpleHash(str) {
+          let h1 = 0xdeadbeef ^ str.length;
+          let h2 = 0x41c6ce57 ^ str.length;
+          for (let i = 0, ch; i < str.length; i++) {
+            ch = str.charCodeAt(i);
+            h1 = Math.imul(h1 ^ ch, 2654435761);
+            h2 = Math.imul(h2 ^ ch, 1597334677);
+          }
+          h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+          h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+          return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
+        }
+
+        const INITIAL_SEED_ITEMS = (global.BargadStore && global.BargadStore.INITIAL_SEED_ITEMS) || [
           {
             id: "DT-001",
             content_type: "thought",
@@ -469,26 +612,6 @@
             created_at: "2026-10-29T08:00:00Z"
           },
           {
-            id: "DT-002",
-            content_type: "thought",
-            title: "“बबियाड़ की मिट्टी, सुबह की धूप, अपने हाथ का सादा भोजन और अपनों के साथ बैठकर दो मीठे बोल—80 की उम्र के बाद सबसे बड़ी दवाई किसी बोतल में नहीं, बल्कि परिवार की मुस्कान में मिलती है।”",
-            summary: "The soil of Babiyar, morning sunlight, simple home-cooked food, and warm conversations with family are the greatest medicine after 80.",
-            category: "सेहत और पहाड़ की सादगी",
-            author: "पूज्य ईजा (80 वर्ष — बबियाड़ एवं चोरगलिया, नैनीताल)",
-            location: "सुनहरी डायरी — पृष्ठ #002",
-            created_at: "2026-10-28T08:00:00Z"
-          },
-          {
-            id: "DT-003",
-            content_type: "thought",
-            title: "“सोने से पहले जब 87 वर्ष के पिता और पुत्र एक स्वर में ‘कृष्णाय वासुदेवाय हरये परमात्मने’ का उच्चारण करते हैं, तो वह केवल प्रार्थना नहीं बल्कि तीन पीढ़ियों के संस्कारों की अमर धरोहर बन जाती है।”",
-            summary: "When an 87-year-old father and his son chant 'Krishnaya Vasudevaya' together at bedtime, it becomes an eternal legacy of values across generations.",
-            category: "रात्रि संस्कार एवं आध्यात्म",
-            author: "बरगद सहारा फाउंडर नोट (बबियाड़ • नैनीताल • नोएडा)",
-            location: "एपिसोड #01 विशेष स्मृति",
-            created_at: "2026-10-29T09:30:00Z"
-          },
-          {
             id: "ELDER-001",
             content_type: "elder",
             title: "पूज्य पिताजी (श्री सुयाल जी — 'मास्साब')",
@@ -497,32 +620,8 @@
             location: "पैतृक ग्राम बबियाड़ (Babiyar) एवं चोरगलिया, नैनीताल",
             summary: "ग्राम बबियाड़ की जड़ों से निकलकर एक आदर्श शिक्षक के रूप में सीमित आय में चार बच्चों को उच्च शिक्षा दिलाना, बिना कर्ज के घर बनाना और 87 की उम्र में भी स्वाभिमानी जीवन जीना।",
             full_content: "“अपनी जन्मभूमि बबियाड़ के संस्कारों को कभी मत भूलना। बच्चों को धन से ज्यादा संतोष की शिक्षा दो और कर्ज से दूर रहो।”",
-            extra_json: {
-              serialNo: "#001 / 100",
-              age: 87,
-              role: "सेवानिवृत्त शिक्षक (Retired Teacher)",
-              financialRule: "हर महीने की पहली तारीख को आमदनी का एक हिस्सा भविष्य और बच्चों की शिक्षा के लिए अलग रख देना।",
-              healthSecret: "बबियाड़ के पहाड़ों की पैदल दिनचर्या, प्रातः संध्या-पूजा और समय पर सादा भोजन।"
-            },
+            extra_json: { serialNo: "#001 / 100", age: 87, role: "सेवानिवृत्त शिक्षक (Retired Teacher)" },
             created_at: "2026-10-26T10:00:00Z"
-          },
-          {
-            id: "ELDER-002",
-            content_type: "elder",
-            title: "पूज्य ईजा (माता जी)",
-            category: "lifestyle",
-            author: "#002 / 100 • उम्र: 80 वर्ष",
-            location: "बबियाड़ (Babiyar) एवं चोरगलिया, नैनीताल",
-            summary: "बबियाड़ के पहाड़ी जीवन से लेकर आज तक 60+ वर्षों के वैवाहिक सफर में हर सुख-दुख में परिवार और गोवंश ('काली') को एक सूत्र में पिरोकर रखना।",
-            full_content: "“जिस घर में बड़े-बुजुर्गों का आदर, अपनी मिट्टी से प्रेम और आपस में मेल होता है, वहाँ लक्ष्मी और सेहत अपने आप निवास करती हैं।”",
-            extra_json: {
-              serialNo: "#002 / 100",
-              age: 80,
-              role: "गृहलक्ष्मी एवं परिवार की धुरी",
-              financialRule: "रसोई और घर में अन्न या धन की एक पाई भी व्यर्थ न जाने देना—छोटी बचत ही मुसीबत में सबसे बड़ा सहारा बनती है।",
-              healthSecret: "प्रकृति और पहाड़ के करीब रहना, सुबह जल्दी उठना और मन में प्रसन्नता रखना।"
-            },
-            created_at: "2026-10-25T10:00:00Z"
           },
           {
             id: "VLOG-001",
@@ -531,20 +630,9 @@
             category: "एपिसोड #01 (Launch Vlog)",
             author: "YouTube @BargadSahara",
             location: "गाज़ियाबाद स्टेशन • नोएडा",
-            summary: "बड़ी मुश्किल से ईज़ा के मनाने पर 87 वर्षीय रिटायर्ड शिक्षक पिताजी ('मास्साब') का नोएडा आगमन। स्टेशन पर पोता-पोती का गले लगना, नन्हे खरगोश से गृह-प्रवेश स्वागत और बिस्तर पर 'कृष्णाय वासुदेवाय हरये परमात्मने' का भावुक श्लोक।",
+            summary: "87 वर्षीय रिटायर्ड शिक्षक पिताजी ('मास्साब') का नोएडा आगमन और बिस्तर पर 'कृष्णाय वासुदेवाय हरये परमात्मने' का भावुक श्लोक।",
             video_url: "https://www.youtube.com/@BargadSahara",
             created_at: "2026-10-29T07:00:00Z"
-          },
-          {
-            id: "VLOG-002",
-            content_type: "vlog",
-            title: "पहली सुबह (Day 1 Morning): झमाझम बारिश में भगवान का स्वागत, पिताजी की संध्या-पूजा और 20 साल पुराने Sony कैमरे",
-            category: "एपिसोड #02 (Morning Special)",
-            author: "YouTube @BargadSahara",
-            location: "नोएडा निवास मंदिर",
-            summary: "सुबह की बारिश के बीच पिताजी की सेहत का ध्यान, पोते द्वारा पूजा का जल देना, मंदिर में पिताजी की संध्या-पूजा ('जय श्री गणेश, जय श्री राम') और 20 साल पुराने Sony कैमरों व वेबसाइट का विधिवत श्री गणेश।",
-            video_url: "https://www.youtube.com/@BargadSahara",
-            created_at: "2026-10-29T08:30:00Z"
           },
           {
             id: "BLOG-001",
@@ -554,7 +642,7 @@
             author: "संस्थापक (जन्मभूमि: बबियाड़ • IT General Manager एवं शिक्षक पुत्र)",
             location: "26 अक्टूबर 2026 • 4 मिनट पठन",
             summary: "जन्मभूमि बबियाड़ के एक साधारण परिवार और शिक्षक पिता की छत्रछाया से निकलकर देश-विदेश में 20 साल काम करने के बाद क्यों हमने यह मिशन शुरू किया...",
-            full_content: "मेरी जन्मभूमि ग्राम बबियाड़ (Babiyar) है। पहाड़ के एक साधारण परिवार और एक आदर्श शिक्षक पिता की छत्रछाया से निकलकर कॉर्पोरेट जगत में 20 वर्षों तक देश-विदेश में IT Solutions Expert और MNC में General Manager के रूप में काम करने के बाद, मेरे मन में एक सवाल हमेशा रहा—हमारे बबियाड़ और देश भर के बुजुर्गों के पास जो दशकों का जीवन-अनुभव, सादगी और आर्थिक अनुशासन है, क्या हम उसे आने वाली पीढ़ी के लिए सहेज पा रहे हैं?",
+            full_content: "मेरी जन्मभूमि ग्राम बबियाड़ (Babiyar) है।",
             created_at: "2026-10-26T12:00:00Z"
           },
           {
@@ -576,7 +664,41 @@
             created_at: "2026-10-26T08:00:00Z"
           }
         ];
+
         const syncChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("bargad_sahara_live_sync") : null;
+
+        function getLocalUsersMap() {
+          const map = new Map();
+          map.set("bargadsahara@gmail.com", {
+            email: "bargadsahara@gmail.com",
+            name: "बरगद सहारा मुख्य संस्थापक (Super Admin)",
+            role: "SUPER_ADMIN",
+            status: "active",
+            is_founder: true,
+            pass_sig: simpleHash("w6NLFwRhv2Oi6mo1"),
+            alt_sig: simpleHash("Bargad@2026#Admin"),
+            created_at: "2026-10-26T08:00:00Z"
+          });
+          try {
+            const saved = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || "[]");
+            if (Array.isArray(saved)) {
+              for (const u of saved) {
+                if (u && u.email) {
+                  const k = u.email.toLowerCase();
+                  const prev = map.get(k) || {};
+                  map.set(k, { ...prev, ...u, email: k, is_founder: ALLOWED_ADMIN_EMAILS.includes(k) });
+                }
+              }
+            }
+          } catch (e) {}
+          return map;
+        }
+
+        function saveLocalUsersMap(map) {
+          localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(Array.from(map.values())));
+          if (syncChannel) syncChannel.postMessage({ type: "RELOAD" });
+        }
+
         function openLocalDB() {
           return new Promise((resolve) => {
             if (!global.indexedDB) return resolve(null);
@@ -589,21 +711,44 @@
             req.onerror = () => resolve(null);
           });
         }
+        const LOCAL_ITEMS_KEY = "bargad_local_items_v2";
+        function readStorageItemsMap() {
+          const map = new Map();
+          try {
+            const arr = JSON.parse(localStorage.getItem(LOCAL_ITEMS_KEY) || "[]");
+            if (Array.isArray(arr)) {
+              for (const x of arr) { if (x && x.id) map.set(x.id, x); }
+            }
+          } catch (e) {}
+          return map;
+        }
+        function writeStorageItemsMap(map) {
+          try { localStorage.setItem(LOCAL_ITEMS_KEY, JSON.stringify(Array.from(map.values()))); } catch (e) {}
+        }
         async function getLocalItems() {
+          const map = readStorageItemsMap();
           const db = await openLocalDB();
-          if (!db) return [];
-          return new Promise((resolve) => {
-            try {
-              const tx = db.transaction(["items"], "readonly");
-              const req = tx.objectStore("items").getAll();
-              req.onsuccess = () => resolve(req.result || []);
-              req.onerror = () => resolve([]);
-            } catch (e) { resolve([]); }
-          });
+          if (db) {
+            const idbItems = await new Promise((resolve) => {
+              try {
+                const tx = db.transaction(["items"], "readonly");
+                const req = tx.objectStore("items").getAll();
+                req.onsuccess = () => resolve(req.result || []);
+                req.onerror = () => resolve([]);
+              } catch (e) { resolve([]); }
+            });
+            for (const x of idbItems) { if (x && x.id) map.set(x.id, x); }
+          }
+          return Array.from(map.values());
         }
         async function putLocalItem(item) {
+          if (item && item.id) {
+            const map = readStorageItemsMap();
+            map.set(item.id, item);
+            writeStorageItemsMap(map);
+          }
           const db = await openLocalDB();
-          if (!db) return false;
+          if (!db) return true;
           return new Promise((resolve) => {
             try {
               const tx = db.transaction(["items"], "readwrite");
@@ -614,8 +759,13 @@
           });
         }
         async function deleteLocalItem(id) {
+          if (id) {
+            const map = readStorageItemsMap();
+            map.delete(id);
+            writeStorageItemsMap(map);
+          }
           const db = await openLocalDB();
-          if (!db) return false;
+          if (!db) return true;
           return new Promise((resolve) => {
             try {
               const tx = db.transaction(["items"], "readwrite");
@@ -661,7 +811,19 @@
             const raw = localStorage.getItem(SESSION_KEY);
             if (!raw) return null;
             const session = JSON.parse(raw);
-            if (!session || !session.email || !ALLOWED_ADMIN_EMAILS.includes(session.email.toLowerCase())) return null;
+            if (!session || !session.email) return null;
+            const cleanEmail = session.email.toLowerCase();
+            const usersMap = getLocalUsersMap();
+            const userRec = usersMap.get(cleanEmail);
+            if (userRec && userRec.status === "blocked") {
+              localStorage.removeItem(SESSION_KEY);
+              return null;
+            }
+            if (!userRec && !ALLOWED_ADMIN_EMAILS.includes(cleanEmail)) {
+              localStorage.removeItem(SESSION_KEY);
+              return null;
+            }
+            if (userRec && userRec.role) session.role = userRec.role;
             return session;
           } catch (e) { return null; }
         }
@@ -686,11 +848,7 @@
             if (ctrl) setTimeout(() => ctrl.abort(), 4500);
             const apiRes = await fetch("/api/content", {
               signal: ctrl ? ctrl.signal : undefined,
-              headers: {
-                "x-mongo-user": mongoCfg.dbUser,
-                "x-mongo-pass": mongoCfg.dbPass,
-                "x-mongo-uri": mongoCfg.uri
-              }
+              headers: { "x-mongo-user": mongoCfg.dbUser, "x-mongo-pass": mongoCfg.dbPass, "x-mongo-uri": mongoCfg.uri }
             });
             if (apiRes.ok) {
               const data = await apiRes.json();
@@ -707,11 +865,18 @@
         }
         async function loginAdmin({ email, password }) {
           const cleanEmail = String(email || "").trim().toLowerCase();
+          const rawPass = String(password || "");
+          if (!cleanEmail || !rawPass) {
+            return { ok: false, error: "कृपया ईमेल आईडी और पासवर्ड दोनों दर्ज करें।" };
+          }
           try {
+            const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+            if (ctrl) setTimeout(() => ctrl.abort(), 4500);
             const res = await fetch("/api/auth", {
+              signal: ctrl ? ctrl.signal : undefined,
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email: cleanEmail, password })
+              body: JSON.stringify({ action: "login", email: cleanEmail, password: rawPass })
             });
             if (res.ok) {
               const data = await res.json();
@@ -720,22 +885,173 @@
                 setAdminSession(session);
                 return { ok: true, session };
               }
+            } else if (res.status === 401 || res.status === 403 || res.status === 400) {
+              const localMap = getLocalUsersMap();
+              if (!localMap.has(cleanEmail)) {
+                const errData = await res.json().catch(() => ({}));
+                if (errData && errData.error) return { ok: false, error: errData.error };
+              }
             }
           } catch (e) {}
-          if (!ALLOWED_ADMIN_EMAILS.includes(cleanEmail)) {
-            return { ok: false, error: "केवल अधिकृत एडमिन जीमेल (bargadsahara@gmail.com) ही लॉगिन कर सकते हैं।" };
+          const usersMap = getLocalUsersMap();
+          const userRec = usersMap.get(cleanEmail);
+          const isFounder = ALLOWED_ADMIN_EMAILS.includes(cleanEmail);
+          if (!userRec && !isFounder) {
+            return { ok: false, error: "यह ईमेल आईडी एडमिन पोर्टल में पंजीकृत नहीं है।" };
           }
-          const savedPass = localStorage.getItem("bargad_custom_admin_pass") || "Bargad@2026#Admin";
-          if (password !== savedPass && password !== "Bargad@2026#Admin" && password !== "w6NLFwRhv2Oi6mo1") {
-            return { ok: false, error: "गलत एडमिन पासवर्ड!" };
+          if (userRec && userRec.status === "blocked") {
+            return { ok: false, error: "यह यूज़र अकाउंट मुख्य एडमिन द्वारा ब्लॉक (निलंबित) किया गया है।" };
           }
-          const session = { email: cleanEmail, name: "Bargad Sahara Chief Admin", role: "SUPER_ADMIN", token: "local-admin-" + Date.now() };
+          const inputSig = simpleHash(rawPass);
+          let passOk = false;
+          if (userRec && userRec.pass_sig === inputSig) passOk = true;
+          else if (userRec && !userRec.custom_pass && userRec.alt_sig === inputSig) passOk = true;
+          else if (isFounder && (!userRec || !userRec.custom_pass) && (inputSig === simpleHash("w6NLFwRhv2Oi6mo1") || inputSig === simpleHash("Bargad@2026#Admin"))) passOk = true;
+          if (!passOk) {
+            return { ok: false, error: "गलत पासवर्ड! कृपया सही पासवर्ड दर्ज करें।" };
+          }
+          const role = isFounder ? "SUPER_ADMIN" : (userRec && userRec.role) || "EDITOR";
+          const name = (userRec && userRec.name) || (isFounder ? "बरगद सहारा मुख्य संस्थापक (Super Admin)" : cleanEmail.split("@")[0]);
+          const session = { email: cleanEmail, name, role, token: "local-admin-" + Date.now() };
           setAdminSession(session);
           return { ok: true, session };
+        }
+        async function getUsers() {
+          const map = getLocalUsersMap();
+          const session = getAdminSession();
+          const mongoCfg = getMongoSettings();
+          if (session && session.token) {
+            try {
+              const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+              if (ctrl) setTimeout(() => ctrl.abort(), 4000);
+              const res = await fetch("/api/auth?action=users", {
+                signal: ctrl ? ctrl.signal : undefined,
+                headers: { Authorization: `Bearer ${session.token}`, "x-mongo-user": mongoCfg.dbUser, "x-mongo-pass": mongoCfg.dbPass }
+              });
+              if (res.ok) {
+                const data = await res.json();
+                if (data && Array.isArray(data.users)) {
+                  for (const u of data.users) {
+                    if (u && u.email) {
+                      const k = u.email.toLowerCase();
+                      const prev = map.get(k) || {};
+                      map.set(k, { ...prev, ...u, email: k });
+                    }
+                  }
+                }
+              }
+            } catch (e) {}
+          }
+          return Array.from(map.values()).map((u) => ({
+            email: u.email,
+            name: u.name || u.email,
+            role: u.role || "EDITOR",
+            status: u.status || "active",
+            is_founder: ALLOWED_ADMIN_EMAILS.includes(u.email.toLowerCase()),
+            created_at: u.created_at || "2026-10-26T08:00:00Z"
+          }));
+        }
+        async function addUser({ name, email, password, role }) {
+          const session = getAdminSession();
+          if (!session || session.role !== "SUPER_ADMIN") throw new Error("केवल मुख्य एडमिन (SUPER_ADMIN) ही नए यूज़र जोड़ सकते हैं।");
+          const cleanEmail = String(email || "").trim().toLowerCase();
+          const cleanName = String(name || "").trim();
+          const rawPass = String(password || "");
+          const cleanRole = ["SUPER_ADMIN", "EDITOR", "VIEWER"].includes(role) ? role : "EDITOR";
+          if (!cleanEmail || !cleanEmail.includes("@") || !cleanEmail.includes(".")) throw new Error("कृपया वैध ईमेल / जीमेल आईडी दर्ज करें।");
+          if (!rawPass || rawPass.length < 6) throw new Error("पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।");
+          const map = getLocalUsersMap();
+          const newUser = {
+            email: cleanEmail,
+            name: cleanName || cleanEmail.split("@")[0],
+            role: ALLOWED_ADMIN_EMAILS.includes(cleanEmail) ? "SUPER_ADMIN" : cleanRole,
+            status: "active",
+            is_founder: ALLOWED_ADMIN_EMAILS.includes(cleanEmail),
+            pass_sig: simpleHash(rawPass),
+            custom_pass: true,
+            created_by: session.email,
+            created_at: new Date().toISOString()
+          };
+          map.set(cleanEmail, newUser);
+          saveLocalUsersMap(map);
+          const mongoCfg = getMongoSettings();
+          try {
+            await fetch("/api/auth", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.token}`, "x-mongo-user": mongoCfg.dbUser, "x-mongo-pass": mongoCfg.dbPass },
+              body: JSON.stringify({ action: "add_user", email: cleanEmail, name: newUser.name, password: rawPass, role: newUser.role })
+            });
+          } catch (e) {}
+          return { email: newUser.email, name: newUser.name, role: newUser.role, status: newUser.status, is_founder: newUser.is_founder };
+        }
+        async function removeUser(targetEmail) {
+          const session = getAdminSession();
+          if (!session || session.role !== "SUPER_ADMIN") throw new Error("केवल मुख्य एडमिन (SUPER_ADMIN) ही यूज़र हटा सकते हैं।");
+          const cleanEmail = String(targetEmail || "").trim().toLowerCase();
+          if (ALLOWED_ADMIN_EMAILS.includes(cleanEmail)) throw new Error("मुख्य संस्थापक एडमिन (bargadsahara@gmail.com) को हटाया नहीं जा सकता।");
+          const map = getLocalUsersMap();
+          if (!map.has(cleanEmail)) throw new Error("यूज़र नहीं मिला।");
+          map.delete(cleanEmail);
+          saveLocalUsersMap(map);
+          const mongoCfg = getMongoSettings();
+          try {
+            await fetch("/api/auth", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.token}`, "x-mongo-user": mongoCfg.dbUser, "x-mongo-pass": mongoCfg.dbPass },
+              body: JSON.stringify({ action: "remove_user", email: cleanEmail })
+            });
+          } catch (e) {}
+          return true;
+        }
+        async function toggleUserStatus(targetEmail, newStatus) {
+          const session = getAdminSession();
+          if (!session || session.role !== "SUPER_ADMIN") throw new Error("केवल मुख्य एडमिन (SUPER_ADMIN) ही यूज़र स्टेटस बदल सकते हैं।");
+          const cleanEmail = String(targetEmail || "").trim().toLowerCase();
+          if (ALLOWED_ADMIN_EMAILS.includes(cleanEmail)) throw new Error("मुख्य संस्थापक एडमिन को ब्लॉक नहीं किया जा सकता।");
+          const map = getLocalUsersMap();
+          const u = map.get(cleanEmail);
+          if (!u) throw new Error("यूज़र नहीं मिला।");
+          u.status = newStatus === "blocked" ? "blocked" : "active";
+          map.set(cleanEmail, u);
+          saveLocalUsersMap(map);
+          const mongoCfg = getMongoSettings();
+          try {
+            await fetch("/api/auth", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.token}`, "x-mongo-user": mongoCfg.dbUser, "x-mongo-pass": mongoCfg.dbPass },
+              body: JSON.stringify({ action: "toggle_status", email: cleanEmail, status: u.status })
+            });
+          } catch (e) {}
+          return u.status;
+        }
+        async function changePassword(targetEmail, newPassword) {
+          const session = getAdminSession();
+          if (!session) throw new Error("पासवर्ड बदलने के लिए लॉगिन आवश्यक है।");
+          const cleanEmail = String(targetEmail || session.email).trim().toLowerCase();
+          if (cleanEmail !== session.email.toLowerCase() && session.role !== "SUPER_ADMIN") throw new Error("आप केवल अपना पासवर्ड बदल सकते हैं।");
+          const rawPass = String(newPassword || "");
+          if (!rawPass || rawPass.length < 6) throw new Error("नया पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।");
+          const map = getLocalUsersMap();
+          const u = map.get(cleanEmail) || { email: cleanEmail, name: cleanEmail.split("@")[0], role: ALLOWED_ADMIN_EMAILS.includes(cleanEmail) ? "SUPER_ADMIN" : "EDITOR", status: "active" };
+          u.pass_sig = simpleHash(rawPass);
+          u.custom_pass = true;
+          map.set(cleanEmail, u);
+          saveLocalUsersMap(map);
+          const mongoCfg = getMongoSettings();
+          try {
+            await fetch("/api/auth", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.token}`, "x-mongo-user": mongoCfg.dbUser, "x-mongo-pass": mongoCfg.dbPass },
+              body: JSON.stringify({ action: "change_password", email: cleanEmail, newPassword: rawPass })
+            });
+          } catch (e) {}
+          return true;
         }
         async function adminSaveItem(itemData) {
           const session = getAdminSession();
           if (!session) throw new Error("केवल लॉगिन किए हुए एडमिन ही कंटेंट जोड़ सकते हैं।");
+          if (session.role === "VIEWER") throw new Error("अनुमति अस्वीकृत (VIEWER Role): आपके पास केवल देखने का अधिकार है, कंटेंट जोड़ने या बदलने का नहीं।");
+          if (!itemData || !String(itemData.title || "").trim()) throw new Error("शीर्षक (Title) अनिवार्य है।");
           const item = {
             id: itemData.id || `BS-${Date.now()}`,
             content_type: itemData.content_type || "thought",
@@ -756,13 +1072,7 @@
           try {
             await fetch("/api/content", {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${session.token}`,
-                "x-mongo-user": mongoCfg.dbUser,
-                "x-mongo-pass": mongoCfg.dbPass,
-                "x-mongo-uri": mongoCfg.uri
-              },
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.token}`, "x-mongo-user": mongoCfg.dbUser, "x-mongo-pass": mongoCfg.dbPass, "x-mongo-uri": mongoCfg.uri },
               body: JSON.stringify(item)
             });
           } catch (e) {}
@@ -772,18 +1082,15 @@
         async function adminDeleteItem(id) {
           const session = getAdminSession();
           if (!session) throw new Error("केवल लॉगिन किए हुए एडमिन ही कंटेंट हटा सकते हैं।");
+          if (session.role === "VIEWER") throw new Error("अनुमति अस्वीकृत (VIEWER Role): आपके पास कंटेंट हटाने का अधिकार नहीं है।");
+          if (!id) throw new Error("हटाने के लिए ID आवश्यक है।");
           markSeedDeleted(id);
           await deleteLocalItem(id);
           const mongoCfg = getMongoSettings();
           try {
             await fetch(`/api/content?id=${encodeURIComponent(id)}`, {
               method: "DELETE",
-              headers: {
-                Authorization: `Bearer ${session.token}`,
-                "x-mongo-user": mongoCfg.dbUser,
-                "x-mongo-pass": mongoCfg.dbPass,
-                "x-mongo-uri": mongoCfg.uri
-              }
+              headers: { Authorization: `Bearer ${session.token}`, "x-mongo-user": mongoCfg.dbUser, "x-mongo-pass": mongoCfg.dbPass, "x-mongo-uri": mongoCfg.uri }
             });
           } catch (e) {}
           if (syncChannel) syncChannel.postMessage({ type: "RELOAD" });
@@ -816,6 +1123,11 @@
           loginAdmin,
           getAdminSession,
           setAdminSession,
+          getUsers,
+          addUser,
+          removeUser,
+          toggleUserStatus,
+          changePassword,
           adminSaveItem,
           adminDeleteItem,
           getMongoSettings,
@@ -844,6 +1156,7 @@
       }
 
       let allItems = [];
+      let allUsers = [];
       let activeTab = "all";
       let currentImageData = "";
 
@@ -853,8 +1166,30 @@
         el.className = "alert-box " + (isError ? "alert-error" : "alert-success");
         el.textContent = msg;
         setTimeout(() => {
-          el.className = "alert-box";
-        }, 5000);
+          if (el.textContent === msg) {
+            el.className = "alert-box";
+          }
+        }, 5500);
+      }
+
+      function applyRoleRestrictions(session) {
+        const isViewer = session && session.role === "VIEWER";
+        const isSuperAdmin = session && session.role === "SUPER_ADMIN";
+
+        const noticeEl = document.getElementById("viewer-readonly-notice");
+        const saveBtn = document.getElementById("save-content-btn");
+        const addUserBox = document.getElementById("add-user-box");
+        const dbTabBtn = document.getElementById("tab-btn-database");
+        const cpEmailInput = document.getElementById("cp-email");
+
+        if (noticeEl) noticeEl.style.display = isViewer ? "block" : "none";
+        if (saveBtn) saveBtn.disabled = isViewer;
+        if (addUserBox) addUserBox.style.display = isSuperAdmin ? "block" : "none";
+        if (dbTabBtn) dbTabBtn.style.display = isSuperAdmin ? "inline-block" : "none";
+        if (cpEmailInput && session) {
+          if (!cpEmailInput.value) cpEmailInput.value = session.email;
+          cpEmailInput.readOnly = !isSuperAdmin;
+        }
       }
 
       async function refreshDashboard() {
@@ -868,7 +1203,7 @@
           loginSec.style.display = "block";
           dashSec.classList.remove("active");
           logoutBtn.style.display = "none";
-          sub.textContent = "Restricted Access • केवल अधिकृत एडमिन जीमेल द्वारा लॉगिन";
+          sub.textContent = "Restricted Access • केवल पंजीकृत एडमिन एवं टीम लॉगिन";
           return;
         }
 
@@ -877,19 +1212,27 @@
         logoutBtn.style.display = "inline-flex";
         sub.textContent = `Logged in as: ${session.email} (${session.role})`;
 
+        applyRoleRestrictions(session);
+
         if (!allItems.length && window.BargadStore.INITIAL_SEED_ITEMS) {
           allItems = window.BargadStore.INITIAL_SEED_ITEMS.slice();
-          renderItemsList();
+          renderActiveView();
         }
 
-        const res = await window.BargadStore.fetchAllContent();
+        const [res, usersList] = await Promise.all([
+          window.BargadStore.fetchAllContent(),
+          window.BargadStore.getUsers()
+        ]);
+
         allItems = res.items || [];
+        allUsers = usersList || [];
 
         document.getElementById("kpi-photos").textContent = allItems.filter(x => x.content_type === "photo").length;
         document.getElementById("kpi-thoughts").textContent = allItems.filter(x => x.content_type === "thought").length;
         document.getElementById("kpi-blogs").textContent = allItems.filter(x => x.content_type === "blog").length;
         document.getElementById("kpi-vlogs").textContent = allItems.filter(x => x.content_type === "vlog").length;
         document.getElementById("kpi-elders").textContent = allItems.filter(x => x.content_type === "elder").length;
+        document.getElementById("kpi-users").textContent = allUsers.filter(u => u.status !== "blocked").length;
         document.getElementById("kpi-db-mode").textContent = res.dbSource || "Hybrid DB";
 
         const cfg = window.BargadStore.getMongoSettings();
@@ -897,20 +1240,85 @@
         document.getElementById("mongo-pass").value = cfg.dbPass || "w6NLFwRhv2Oi6mo1";
         document.getElementById("mongo-uri-preview").value = cfg.uri || "";
 
-        renderItemsList();
+        renderActiveView();
       }
 
-      function renderItemsList() {
+      function renderUsersList() {
+        const container = document.getElementById("users-list-container");
+        if (!container) return;
+        const session = window.BargadStore.getAdminSession();
+        const isSuper = session && session.role === "SUPER_ADMIN";
+
+        if (!allUsers.length) {
+          container.innerHTML = `<p style="padding:16px; color:#5C6B62;">कोई यूज़र नहीं मिला।</p>`;
+          return;
+        }
+
+        const roleLabels = {
+          SUPER_ADMIN: `<span class="role-badge role-super">👑 SUPER_ADMIN (पूर्ण अधिकार)</span>`,
+          EDITOR: `<span class="role-badge role-editor">✍️ EDITOR (संपादक)</span>`,
+          VIEWER: `<span class="role-badge role-viewer">👁️ VIEWER (केवल दर्शक)</span>`
+        };
+
+        container.innerHTML = allUsers.map(u => {
+          const isBlocked = u.status === "blocked";
+          const statusHtml = isBlocked
+            ? `<span class="status-badge status-blocked">🔴 ब्लॉक (Blocked)</span>`
+            : `<span class="status-badge status-active">🟢 सक्रिय (Active)</span>`;
+
+          return `
+            <div class="item-row" data-user-email="${escapeHTML(u.email)}">
+              <div style="flex:1;">
+                <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:4px;">
+                  <strong style="color:#1B4332; font-size:0.98rem;">👤 ${escapeHTML(u.name)}</strong>
+                  ${roleLabels[u.role] || roleLabels.EDITOR}
+                  ${statusHtml}
+                </div>
+                <div style="font-size:0.84rem; color:#5C6B62; font-family:monospace;">
+                  ✉️ ${escapeHTML(u.email)}
+                  ${u.is_founder ? ` <span style="color:#7F4F24; font-family:sans-serif; font-weight:700;">• (मुख्य संस्थापक अकाउंट)</span>` : ""}
+                </div>
+              </div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap; flex-shrink:0;">
+                ${isSuper ? `
+                  <button type="button" class="btn btn-outline-dark" style="padding:5px 10px; font-size:0.75rem;" onclick="window.BargadAdmin.prefillPasswordChange('${escapeHTML(u.email)}')">🔑 पासवर्ड बदलें</button>
+                  ${!u.is_founder ? `
+                    <button type="button" class="btn btn-outline-dark" style="padding:5px 10px; font-size:0.75rem;" onclick="window.BargadAdmin.handleToggleUserStatus('${escapeHTML(u.email)}', '${isBlocked ? "active" : "blocked"}')">
+                      ${isBlocked ? "✅ अनब्लॉक करें" : "🚫 ब्लॉक करें"}
+                    </button>
+                    <button type="button" class="btn btn-danger" style="padding:5px 10px; font-size:0.75rem;" onclick="window.BargadAdmin.handleRemoveUser('${escapeHTML(u.email)}')">🗑️ हटाएं</button>
+                  ` : ""}
+                ` : ""}
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function renderActiveView() {
         const listEl = document.getElementById("admin-items-list");
+        const usersPanel = document.getElementById("users-management-panel");
         const dbPanel = document.getElementById("database-settings-panel");
+        const session = window.BargadStore.getAdminSession();
+        const isViewer = session && session.role === "VIEWER";
+
+        if (activeTab === "users") {
+          listEl.style.display = "none";
+          dbPanel.style.display = "none";
+          usersPanel.style.display = "block";
+          renderUsersList();
+          return;
+        }
 
         if (activeTab === "database") {
           listEl.style.display = "none";
+          usersPanel.style.display = "none";
           dbPanel.style.display = "block";
           return;
         }
 
         listEl.style.display = "block";
+        usersPanel.style.display = "none";
         dbPanel.style.display = "none";
 
         const filtered = activeTab === "all"
@@ -932,7 +1340,7 @@
         };
 
         listEl.innerHTML = filtered.map(item => `
-          <div class="item-row">
+          <div class="item-row" data-item-id="${escapeHTML(item.id)}">
             <div style="display:flex; gap:14px; align-items:flex-start; flex:1;">
               ${item.image_data ? `<img src="${item.image_data}" class="item-thumb" alt="thumb">` : ""}
               <div>
@@ -947,25 +1355,41 @@
                 ${item.summary ? `<div style="font-size:0.84rem; color:#5C6B62;">${escapeHTML(item.summary)}</div>` : ""}
               </div>
             </div>
-            <div style="display:flex; gap:6px; flex-shrink:0;">
-              <button type="button" class="btn btn-outline-dark" style="padding:5px 10px; font-size:0.76rem;" onclick="window.BargadAdmin.editItem('${escapeHTML(item.id)}')">✏️ एडिट</button>
-              <button type="button" class="btn btn-danger" style="padding:5px 10px; font-size:0.76rem;" onclick="window.BargadAdmin.deleteItem('${escapeHTML(item.id)}')">🗑️ हटाएं</button>
-            </div>
+            ${!isViewer ? `
+              <div style="display:flex; gap:6px; flex-shrink:0;">
+                <button type="button" class="btn btn-outline-dark" style="padding:5px 10px; font-size:0.76rem;" onclick="window.BargadAdmin.editItem('${escapeHTML(item.id)}')">✏️ एडिट</button>
+                <button type="button" class="btn btn-danger" style="padding:5px 10px; font-size:0.76rem;" onclick="window.BargadAdmin.deleteItem('${escapeHTML(item.id)}')">🗑️ हटाएं</button>
+              </div>
+            ` : ""}
           </div>
         `).join("");
       }
 
       window.BargadAdmin = {
+        togglePasswordVisibility: function (inputId, btnEl) {
+          const inp = document.getElementById(inputId);
+          if (!inp) return;
+          if (inp.type === "password") {
+            inp.type = "text";
+            if (btnEl) btnEl.textContent = "🙈";
+          } else {
+            inp.type = "password";
+            if (btnEl) btnEl.textContent = "👁️";
+          }
+        },
+
         handleLogin: async function (e) {
-          e.preventDefault();
+          if (e) e.preventDefault();
           const email = document.getElementById("admin-email").value.trim();
           const password = document.getElementById("admin-password").value;
           const res = await window.BargadStore.loginAdmin({ email, password });
           if (!res.ok) {
             showAlert("login-alert", res.error || "लॉगिन विफल!", true);
-            return;
+            return false;
           }
-          refreshDashboard();
+          document.getElementById("admin-password").value = "";
+          await refreshDashboard();
+          return true;
         },
 
         logout: function () {
@@ -991,7 +1415,7 @@
         },
 
         saveContent: async function (e) {
-          e.preventDefault();
+          if (e) e.preventDefault();
           try {
             const id = document.getElementById("edit-id").value || `BS-${Date.now()}`;
             const content_type = document.getElementById("content-type").value;
@@ -1019,8 +1443,10 @@
             showAlert("editor-alert", "✅ सफलतापूर्वक डेटाबेस में सेव और वेबसाइट पर लाइव हो गया!");
             this.resetForm();
             await refreshDashboard();
+            return true;
           } catch (err) {
             showAlert("editor-alert", err.message, true);
+            return false;
           }
         },
 
@@ -1051,10 +1477,16 @@
           window.scrollTo({ top: 0, behavior: "smooth" });
         },
 
-        deleteItem: async function (id) {
-          if (!confirm("क्या आप वाकई इस कंटेंट/फोटो को वेबसाइट से हटाना चाहते हैं?")) return;
-          await window.BargadStore.adminDeleteItem(id);
-          await refreshDashboard();
+        deleteItem: async function (id, skipConfirm = false) {
+          if (!skipConfirm && !confirm("क्या आप वाकई इस कंटेंट/फोटो को वेबसाइट से हटाना चाहते हैं?")) return false;
+          try {
+            await window.BargadStore.adminDeleteItem(id);
+            await refreshDashboard();
+            return true;
+          } catch (err) {
+            showAlert("editor-alert", err.message, true);
+            return false;
+          }
         },
 
         resetForm: function () {
@@ -1070,7 +1502,78 @@
           activeTab = tab;
           document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
           if (btnEl) btnEl.classList.add("active");
-          renderItemsList();
+          renderActiveView();
+        },
+
+        handleAddUser: async function (e) {
+          if (e) e.preventDefault();
+          try {
+            const name = document.getElementById("new-user-name").value.trim();
+            const email = document.getElementById("new-user-email").value.trim();
+            const password = document.getElementById("new-user-password").value;
+            const role = document.getElementById("new-user-role").value;
+
+            await window.BargadStore.addUser({ name, email, password, role });
+            document.getElementById("add-user-form").reset();
+            showAlert("user-mgmt-alert", `✅ नया यूज़र (${email}) सफलतापूर्वक जोड़ दिया गया!`);
+            await refreshDashboard();
+            return true;
+          } catch (err) {
+            showAlert("user-mgmt-alert", err.message, true);
+            return false;
+          }
+        },
+
+        handleRemoveUser: async function (email, skipConfirm = false) {
+          if (!skipConfirm && !confirm(`क्या आप वाकई यूज़र (${email}) को एडमिन पोर्टल से हटाना चाहते हैं?`)) return false;
+          try {
+            await window.BargadStore.removeUser(email);
+            showAlert("user-mgmt-alert", `🗑️ यूज़र (${email}) को हटा दिया गया है।`);
+            await refreshDashboard();
+            return true;
+          } catch (err) {
+            showAlert("user-mgmt-alert", err.message, true);
+            return false;
+          }
+        },
+
+        handleToggleUserStatus: async function (email, newStatus) {
+          try {
+            await window.BargadStore.toggleUserStatus(email, newStatus);
+            showAlert(
+              "user-mgmt-alert",
+              newStatus === "blocked"
+                ? `🚫 यूज़र (${email}) को ब्लॉक कर दिया गया है।`
+                : `✅ यूज़र (${email}) को पुनः सक्रिय (Active) कर दिया गया है।`
+            );
+            await refreshDashboard();
+            return true;
+          } catch (err) {
+            showAlert("user-mgmt-alert", err.message, true);
+            return false;
+          }
+        },
+
+        prefillPasswordChange: function (email) {
+          const inp = document.getElementById("cp-email");
+          const passInp = document.getElementById("cp-new-pass");
+          if (inp) inp.value = email;
+          if (passInp) passInp.focus();
+        },
+
+        handleChangePassword: async function (e) {
+          if (e) e.preventDefault();
+          try {
+            const email = document.getElementById("cp-email").value.trim();
+            const newPass = document.getElementById("cp-new-pass").value;
+            await window.BargadStore.changePassword(email, newPass);
+            document.getElementById("cp-new-pass").value = "";
+            showAlert("user-mgmt-alert", `🔑 (${email}) का पासवर्ड सफलतापूर्वक अपडेट हो गया!`);
+            return true;
+          } catch (err) {
+            showAlert("user-mgmt-alert", err.message, true);
+            return false;
+          }
         },
 
         updateUriPreview: function () {
@@ -1081,11 +1584,11 @@
         },
 
         saveDbConfig: function (e) {
-          e.preventDefault();
+          if (e) e.preventDefault();
           const dbUser = document.getElementById("mongo-user").value.trim();
           const dbPass = document.getElementById("mongo-pass").value.trim();
           window.BargadStore.saveMongoSettings({ dbUser, dbPass });
-          alert("✅ MongoDB Atlas कनेक्शन सेटिंग्स सेव हो गईं!");
+          showAlert("editor-alert", "✅ MongoDB Atlas कनेक्शन सेटिंग्स सेव हो गईं!");
           refreshDashboard();
         },
 

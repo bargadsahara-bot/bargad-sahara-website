@@ -259,24 +259,56 @@
     });
   }
 
-  async function getLocalItems() {
-    const db = await openLocalDB();
-    if (!db) return [];
-    return new Promise((resolve) => {
-      try {
-        const tx = db.transaction(["items"], "readonly");
-        const req = tx.objectStore("items").getAll();
-        req.onsuccess = () => resolve(req.result || []);
-        req.onerror = () => resolve([]);
-      } catch (e) {
-        resolve([]);
+  const LOCAL_ITEMS_KEY = "bargad_local_items_v2";
+
+  function readStorageItemsMap() {
+    const map = new Map();
+    try {
+      const arr = JSON.parse(localStorage.getItem(LOCAL_ITEMS_KEY) || "[]");
+      if (Array.isArray(arr)) {
+        for (const x of arr) {
+          if (x && x.id) map.set(x.id, x);
+        }
       }
-    });
+    } catch (e) {}
+    return map;
+  }
+
+  function writeStorageItemsMap(map) {
+    try {
+      localStorage.setItem(LOCAL_ITEMS_KEY, JSON.stringify(Array.from(map.values())));
+    } catch (e) {}
+  }
+
+  async function getLocalItems() {
+    const map = readStorageItemsMap();
+    const db = await openLocalDB();
+    if (db) {
+      const idbItems = await new Promise((resolve) => {
+        try {
+          const tx = db.transaction(["items"], "readonly");
+          const req = tx.objectStore("items").getAll();
+          req.onsuccess = () => resolve(req.result || []);
+          req.onerror = () => resolve([]);
+        } catch (e) {
+          resolve([]);
+        }
+      });
+      for (const x of idbItems) {
+        if (x && x.id) map.set(x.id, x);
+      }
+    }
+    return Array.from(map.values());
   }
 
   async function putLocalItem(item) {
+    if (item && item.id) {
+      const map = readStorageItemsMap();
+      map.set(item.id, item);
+      writeStorageItemsMap(map);
+    }
     const db = await openLocalDB();
-    if (!db) return false;
+    if (!db) return true;
     return new Promise((resolve) => {
       try {
         const tx = db.transaction(["items"], "readwrite");
@@ -290,8 +322,13 @@
   }
 
   async function deleteLocalItem(id) {
+    if (id) {
+      const map = readStorageItemsMap();
+      map.delete(id);
+      writeStorageItemsMap(map);
+    }
     const db = await openLocalDB();
-    if (!db) return false;
+    if (!db) return true;
     return new Promise((resolve) => {
       try {
         const tx = db.transaction(["items"], "readwrite");
@@ -349,15 +386,86 @@
     if (syncChannel) syncChannel.postMessage({ type: "RELOAD" });
   }
 
+  const USERS_STORAGE_KEY = "bargad_admin_users_v2";
+
+  function simpleHash(str) {
+    let h1 = 0xdeadbeef ^ str.length;
+    let h2 = 0x41c6ce57 ^ str.length;
+    for (let i = 0, ch; i < str.length; i++) {
+      ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
+  }
+
+  function getDefaultUsersList() {
+    return [
+      {
+        email: "bargadsahara@gmail.com",
+        name: "बरगद सहारा मुख्य संस्थापक (Super Admin)",
+        role: "SUPER_ADMIN",
+        status: "active",
+        is_founder: true,
+        pass_sig: simpleHash("w6NLFwRhv2Oi6mo1"),
+        alt_sig: simpleHash("Bargad@2026#Admin"),
+        created_at: "2026-10-26T08:00:00Z",
+      },
+    ];
+  }
+
+  function getLocalUsersMap() {
+    const map = new Map();
+    for (const u of getDefaultUsersList()) {
+      map.set(u.email.toLowerCase(), { ...u });
+    }
+    try {
+      const saved = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || "[]");
+      if (Array.isArray(saved)) {
+        for (const u of saved) {
+          if (u && u.email) {
+            const key = u.email.toLowerCase();
+            const prev = map.get(key) || {};
+            map.set(key, {
+              ...prev,
+              ...u,
+              email: key,
+              is_founder: ALLOWED_ADMIN_EMAILS.includes(key),
+            });
+          }
+        }
+      }
+    } catch (e) {}
+    return map;
+  }
+
+  function saveLocalUsersMap(map) {
+    const arr = Array.from(map.values());
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(arr));
+    if (syncChannel) syncChannel.postMessage({ type: "RELOAD" });
+  }
+
   function getAdminSession() {
     try {
       const raw = localStorage.getItem(SESSION_KEY);
       if (!raw) return null;
       const session = JSON.parse(raw);
       if (!session || !session.email) return null;
-      if (!ALLOWED_ADMIN_EMAILS.includes(session.email.toLowerCase())) {
+      const cleanEmail = session.email.toLowerCase();
+      const usersMap = getLocalUsersMap();
+      const userRec = usersMap.get(cleanEmail);
+      if (userRec && userRec.status === "blocked") {
         localStorage.removeItem(SESSION_KEY);
         return null;
+      }
+      if (!userRec && !ALLOWED_ADMIN_EMAILS.includes(cleanEmail)) {
+        localStorage.removeItem(SESSION_KEY);
+        return null;
+      }
+      if (userRec && userRec.role) {
+        session.role = userRec.role;
       }
       return session;
     } catch (e) {
@@ -396,7 +504,10 @@
     const mongoCfg = getMongoSettings();
     let dbSource = "MongoDB Atlas (Sync Ready)";
     try {
+      const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+      if (ctrl) setTimeout(() => ctrl.abort(), 4500);
       const apiRes = await fetch("/api/content", {
+        signal: ctrl ? ctrl.signal : undefined,
         headers: {
           "x-mongo-user": mongoCfg.dbUser,
           "x-mongo-pass": mongoCfg.dbPass,
@@ -429,12 +540,23 @@
 
   async function loginAdmin({ email, password, googleCredential }) {
     const cleanEmail = String(email || "").trim().toLowerCase();
+    const rawPass = String(password || "");
+
+    if (!cleanEmail || !rawPass) {
+      return {
+        ok: false,
+        error: "कृपया ईमेल आईडी और पासवर्ड दोनों दर्ज करें।",
+      };
+    }
 
     try {
+      const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+      if (ctrl) setTimeout(() => ctrl.abort(), 4500);
       const res = await fetch("/api/auth", {
+        signal: ctrl ? ctrl.signal : undefined,
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: cleanEmail, password, googleCredential }),
+        body: JSON.stringify({ action: "login", email: cleanEmail, password: rawPass, googleCredential }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -449,43 +571,285 @@
           setAdminSession(session);
           return { ok: true, session };
         }
-      } else {
-        const errData = await res.json().catch(() => ({}));
-        if (errData && errData.error) {
-          return { ok: false, error: errData.error };
+      } else if (res.status === 401 || res.status === 403 || res.status === 400) {
+        // Also check local users map in case user was added locally before cloud sync
+        const localMap = getLocalUsersMap();
+        if (!localMap.has(cleanEmail)) {
+          const errData = await res.json().catch(() => ({}));
+          if (errData && errData.error) {
+            return { ok: false, error: errData.error };
+          }
         }
       }
     } catch (e) {
-      // Local preview fallback
+      // Local fallback mode
     }
 
-    if (!ALLOWED_ADMIN_EMAILS.includes(cleanEmail)) {
+    const usersMap = getLocalUsersMap();
+    const userRec = usersMap.get(cleanEmail);
+    const isFounder = ALLOWED_ADMIN_EMAILS.includes(cleanEmail);
+
+    if (!userRec && !isFounder) {
       return {
         ok: false,
-        error: `एक्सेस अस्वीकृत! केवल अधिकृत एडमिन जीमेल (${ALLOWED_ADMIN_EMAILS.join(
-          " या "
-        )}) से ही लॉगिन किया जा सकता है।`,
+        error: "यह ईमेल आईडी एडमिन पोर्टल में पंजीकृत नहीं है।",
       };
     }
 
-    const customPass =
-      localStorage.getItem("bargad_custom_admin_pass") || "Bargad@2026#Admin";
-    if (password !== customPass && password !== "w6NLFwRhv2Oi6mo1") {
+    if (userRec && userRec.status === "blocked") {
       return {
         ok: false,
-        error: "गलत एडमिन पासवर्ड! कृपया सही पासवर्ड दर्ज करें।",
+        error: "यह यूज़र अकाउंट मुख्य एडमिन द्वारा ब्लॉक (निलंबित) किया गया है।",
       };
     }
+
+    const inputSig = simpleHash(rawPass);
+    let passOk = false;
+
+    if (userRec && userRec.pass_sig === inputSig) {
+      passOk = true;
+    } else if (userRec && !userRec.custom_pass && userRec.alt_sig === inputSig) {
+      passOk = true;
+    } else if (
+      isFounder &&
+      (!userRec || !userRec.custom_pass) &&
+      (inputSig === simpleHash("w6NLFwRhv2Oi6mo1") || inputSig === simpleHash("Bargad@2026#Admin"))
+    ) {
+      passOk = true;
+    }
+
+    if (!passOk) {
+      return {
+        ok: false,
+        error: "गलत पासवर्ड! कृपया सही पासवर्ड दर्ज करें।",
+      };
+    }
+
+    const role = isFounder ? "SUPER_ADMIN" : (userRec && userRec.role) || "EDITOR";
+    const name =
+      (userRec && userRec.name) ||
+      (isFounder ? "बरगद सहारा मुख्य संस्थापक (Super Admin)" : cleanEmail.split("@")[0]);
 
     const session = {
       email: cleanEmail,
-      name: "बरगद सहारा मुख्य एडमिन (Founder)",
-      role: "SUPER_ADMIN",
+      name,
+      role,
       token: "local-admin-token-" + Date.now(),
       loginAt: new Date().toISOString(),
     };
     setAdminSession(session);
     return { ok: true, session };
+  }
+
+  async function getUsers() {
+    const map = getLocalUsersMap();
+    const session = getAdminSession();
+    const mongoCfg = getMongoSettings();
+    if (session && session.token) {
+      try {
+        const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+        if (ctrl) setTimeout(() => ctrl.abort(), 4000);
+        const res = await fetch("/api/auth?action=users", {
+          signal: ctrl ? ctrl.signal : undefined,
+          headers: {
+            Authorization: `Bearer ${session.token}`,
+            "x-mongo-user": mongoCfg.dbUser,
+            "x-mongo-pass": mongoCfg.dbPass,
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.users)) {
+            for (const u of data.users) {
+              if (u && u.email) {
+                const k = u.email.toLowerCase();
+                const prev = map.get(k) || {};
+                map.set(k, { ...prev, ...u, email: k });
+              }
+            }
+          }
+        }
+      } catch (e) {}
+    }
+    return Array.from(map.values()).map((u) => ({
+      email: u.email,
+      name: u.name || u.email,
+      role: u.role || "EDITOR",
+      status: u.status || "active",
+      is_founder: ALLOWED_ADMIN_EMAILS.includes(u.email.toLowerCase()),
+      created_at: u.created_at || "2026-10-26T08:00:00Z",
+    }));
+  }
+
+  async function addUser({ name, email, password, role }) {
+    const session = getAdminSession();
+    if (!session || session.role !== "SUPER_ADMIN") {
+      throw new Error("केवल मुख्य एडमिन (SUPER_ADMIN) ही नए यूज़र जोड़ सकते हैं।");
+    }
+    const cleanEmail = String(email || "").trim().toLowerCase();
+    const cleanName = String(name || "").trim();
+    const rawPass = String(password || "");
+    const cleanRole = ["SUPER_ADMIN", "EDITOR", "VIEWER"].includes(role) ? role : "EDITOR";
+
+    if (!cleanEmail || !cleanEmail.includes("@") || !cleanEmail.includes(".")) {
+      throw new Error("कृपया वैध ईमेल / जीमेल आईडी दर्ज करें।");
+    }
+    if (!rawPass || rawPass.length < 6) {
+      throw new Error("पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।");
+    }
+
+    const map = getLocalUsersMap();
+    const newUser = {
+      email: cleanEmail,
+      name: cleanName || cleanEmail.split("@")[0],
+      role: ALLOWED_ADMIN_EMAILS.includes(cleanEmail) ? "SUPER_ADMIN" : cleanRole,
+      status: "active",
+      is_founder: ALLOWED_ADMIN_EMAILS.includes(cleanEmail),
+      pass_sig: simpleHash(rawPass),
+      custom_pass: true,
+      created_by: session.email,
+      created_at: new Date().toISOString(),
+    };
+    map.set(cleanEmail, newUser);
+    saveLocalUsersMap(map);
+
+    const mongoCfg = getMongoSettings();
+    try {
+      await fetch("/api/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.token}`,
+          "x-mongo-user": mongoCfg.dbUser,
+          "x-mongo-pass": mongoCfg.dbPass,
+        },
+        body: JSON.stringify({
+          action: "add_user",
+          email: cleanEmail,
+          name: newUser.name,
+          password: rawPass,
+          role: newUser.role,
+        }),
+      });
+    } catch (e) {}
+
+    return {
+      email: newUser.email,
+      name: newUser.name,
+      role: newUser.role,
+      status: newUser.status,
+      is_founder: newUser.is_founder,
+      created_at: newUser.created_at,
+    };
+  }
+
+  async function removeUser(targetEmail) {
+    const session = getAdminSession();
+    if (!session || session.role !== "SUPER_ADMIN") {
+      throw new Error("केवल मुख्य एडमिन (SUPER_ADMIN) ही यूज़र हटा सकते हैं।");
+    }
+    const cleanEmail = String(targetEmail || "").trim().toLowerCase();
+    if (ALLOWED_ADMIN_EMAILS.includes(cleanEmail)) {
+      throw new Error("मुख्य संस्थापक एडमिन (bargadsahara@gmail.com) को हटाया नहीं जा सकता।");
+    }
+    const map = getLocalUsersMap();
+    if (!map.has(cleanEmail)) {
+      throw new Error("यूज़र नहीं मिला।");
+    }
+    map.delete(cleanEmail);
+    saveLocalUsersMap(map);
+
+    const mongoCfg = getMongoSettings();
+    try {
+      await fetch("/api/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.token}`,
+          "x-mongo-user": mongoCfg.dbUser,
+          "x-mongo-pass": mongoCfg.dbPass,
+        },
+        body: JSON.stringify({ action: "remove_user", email: cleanEmail }),
+      });
+    } catch (e) {}
+
+    return true;
+  }
+
+  async function toggleUserStatus(targetEmail, newStatus) {
+    const session = getAdminSession();
+    if (!session || session.role !== "SUPER_ADMIN") {
+      throw new Error("केवल मुख्य एडमिन (SUPER_ADMIN) ही यूज़र स्टेटस बदल सकते हैं।");
+    }
+    const cleanEmail = String(targetEmail || "").trim().toLowerCase();
+    if (ALLOWED_ADMIN_EMAILS.includes(cleanEmail)) {
+      throw new Error("मुख्य संस्थापक एडमिन को ब्लॉक नहीं किया जा सकता।");
+    }
+    const map = getLocalUsersMap();
+    const u = map.get(cleanEmail);
+    if (!u) throw new Error("यूज़र नहीं मिला।");
+    u.status = newStatus === "blocked" ? "blocked" : "active";
+    map.set(cleanEmail, u);
+    saveLocalUsersMap(map);
+
+    const mongoCfg = getMongoSettings();
+    try {
+      await fetch("/api/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.token}`,
+          "x-mongo-user": mongoCfg.dbUser,
+          "x-mongo-pass": mongoCfg.dbPass,
+        },
+        body: JSON.stringify({ action: "toggle_status", email: cleanEmail, status: u.status }),
+      });
+    } catch (e) {}
+
+    return u.status;
+  }
+
+  async function changePassword(targetEmail, newPassword) {
+    const session = getAdminSession();
+    if (!session) {
+      throw new Error("पासवर्ड बदलने के लिए लॉगिन आवश्यक है।");
+    }
+    const cleanEmail = String(targetEmail || session.email).trim().toLowerCase();
+    if (cleanEmail !== session.email.toLowerCase() && session.role !== "SUPER_ADMIN") {
+      throw new Error("आप केवल अपना पासवर्ड बदल सकते हैं।");
+    }
+    const rawPass = String(newPassword || "");
+    if (!rawPass || rawPass.length < 6) {
+      throw new Error("नया पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।");
+    }
+
+    const map = getLocalUsersMap();
+    const u = map.get(cleanEmail) || {
+      email: cleanEmail,
+      name: cleanEmail.split("@")[0],
+      role: ALLOWED_ADMIN_EMAILS.includes(cleanEmail) ? "SUPER_ADMIN" : "EDITOR",
+      status: "active",
+    };
+    u.pass_sig = simpleHash(rawPass);
+    u.custom_pass = true;
+    map.set(cleanEmail, u);
+    saveLocalUsersMap(map);
+
+    const mongoCfg = getMongoSettings();
+    try {
+      await fetch("/api/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.token}`,
+          "x-mongo-user": mongoCfg.dbUser,
+          "x-mongo-pass": mongoCfg.dbPass,
+        },
+        body: JSON.stringify({ action: "change_password", email: cleanEmail, newPassword: rawPass }),
+      });
+    } catch (e) {}
+
+    return true;
   }
 
   async function adminSaveItem(rawItem) {
@@ -494,6 +858,14 @@
       throw new Error(
         "केवल लॉगिन किए हुए एडमिन ही कंटेंट जोड़ या बदल सकते हैं।"
       );
+    }
+    if (session.role === "VIEWER") {
+      throw new Error(
+        "अनुमति अस्वीकृत (VIEWER Role): आपके पास केवल देखने का अधिकार है, कंटेंट जोड़ने या बदलने का नहीं।"
+      );
+    }
+    if (!rawItem || !String(rawItem.title || "").trim()) {
+      throw new Error("शीर्षक (Title) अनिवार्य है।");
     }
 
     const item = {
@@ -539,6 +911,14 @@
     if (!session) {
       throw new Error("केवल लॉगिन किए हुए एडमिन ही कंटेंट हटा सकते हैं।");
     }
+    if (session.role === "VIEWER") {
+      throw new Error(
+        "अनुमति अस्वीकृत (VIEWER Role): आपके पास कंटेंट हटाने का अधिकार नहीं है।"
+      );
+    }
+    if (!id) {
+      throw new Error("हटाने के लिए ID आवश्यक है।");
+    }
 
     markSeedDeleted(id);
     await deleteLocalItem(id);
@@ -558,6 +938,312 @@
 
     if (syncChannel) syncChannel.postMessage({ type: "RELOAD" });
     return true;
+  }
+
+  const LANG_PREF_KEY = "bargad_lang_pref";
+  const VISITOR_HITS_KEY = "bargad_visitor_hits_v2";
+
+  const INITIAL_ANALYTICS_SEEDS = [
+    {
+      id: "HIT-SEED-1",
+      city: "Noida",
+      region: "Uttar Pradesh",
+      country: "India (IN)",
+      device: "Desktop",
+      browser: "Google Chrome",
+      lang: "hi",
+      page: "मुख्य पृष्ठ (Home)",
+      timestamp: "2026-10-30T14:10:00Z",
+    },
+    {
+      id: "HIT-SEED-2",
+      city: "Nainital / Haldwani",
+      region: "Uttarakhand",
+      country: "India (IN)",
+      device: "Mobile",
+      browser: "Chrome Mobile",
+      lang: "hi",
+      page: "6,000 साल का अनुभव",
+      timestamp: "2026-10-30T14:25:00Z",
+    },
+    {
+      id: "HIT-SEED-3",
+      city: "New Delhi",
+      region: "Delhi",
+      country: "India (IN)",
+      device: "Mobile",
+      browser: "Safari iOS",
+      lang: "en",
+      page: "Home (English)",
+      timestamp: "2026-10-30T14:40:00Z",
+    },
+    {
+      id: "HIT-SEED-4",
+      city: "Dehradun",
+      region: "Uttarakhand",
+      country: "India (IN)",
+      device: "Desktop",
+      browser: "Microsoft Edge",
+      lang: "hi",
+      page: "बबियाड़ की जड़ें व ट्रस्ट",
+      timestamp: "2026-10-30T15:05:00Z",
+    },
+  ];
+
+  const BARGAD_AI_KB = [
+    {
+      keywords: ["mission", "what is", "about", "bargad", "sahara", "अभियान", "क्या है", "मिशन", "बरगद", "सहारा", "परिचय"],
+      hi: "🌳 बरगद सहारा (बुढ़ापे का सहारा) जन्मभूमि ग्राम बबियाड़ (Babiyar) और चोरगलिया (नैनीताल) की जड़ों से प्रेरित तीन पीढ़ियों (87 वर्षीय सेवानिवृत्त शिक्षक दादाजी 'मास्साब', 80 वर्षीय ईजा, 44 वर्षीय पिता और 10 वर्षीय पोते) का एक आत्मीय वैश्विक मिशन है। हमारा लक्ष्य 100 बुजुर्गों के 6,000 साल के जीवंत जीवन-अनुभव और 'सुनहरी डायरी' के हस्तलिखित संदेशों को सहेजना है।",
+      en: "🌳 Bargad Sahara (Support for Old Age) is an intergenerational mission rooted in Village Babiyar and Chorgaliya (Nainital, Uttarakhand), led by 3 generations: an 87-year-old retired teacher grandfather ('Massab'), 80-year-old mother ('Eja'), 44-year-old father (IT General Manager), and 10-year-old grandson filming with 20-year-old Sony cameras to preserve 6,000 years of wisdom from 100 elders."
+    },
+    {
+      keywords: ["diary", "sunehri", "6000", "6,000", "100", "elder", "wisdom", "डायरी", "सुनहरी", "बुजुर्ग", "तजुर्बा", "अनुभव"],
+      hi: "📖 'सुनहरी डायरी' (6,000 साल का अनुभव कोष): यदि हम 100 वरिष्ठ नागरिकों के पास बैठकर उनके 60 से 85+ वर्षों के जीवन का निचोड़ सुनें, तो 6,000 वर्षों का तजुर्बा एकत्रित होता है। इसके पहले पन्ने (#001/100) पर 87 वर्षीय पूज्य पिताजी ('मास्साब') और दूसरे पन्ने (#002/100) पर 80 वर्षीय पूज्य ईजा के जीवन-सूत्र दर्ज हैं।",
+      en: "📖 'Sunehri Diary' (6,000 Years of Wisdom Archive): By documenting the 60 to 85+ years of lived lessons from 100 senior citizens, we preserve 6,000 years of human wisdom. Entry #001 features our 87-year-old retired teacher father ('Massab') and Entry #002 features our 80-year-old mother ('Eja')."
+    },
+    {
+      keywords: ["saving", "financial", "money", "income", "debt", "loan", "बचत", "आर्थिक", "पैसा", "कर्ज", "आमदनी", "चादर"],
+      hi: "💰 बुजुर्गों का आर्थिक और बचत सूत्र: 87 वर्षीय सेवानिवृत्त शिक्षक पिताजी का नियम है— “कम आमदनी कभी इंसान को गरीब नहीं बनाती, बल्कि बिना सोचे-समझे किया गया दिखावा इंसान को कर्जदार बनाता है। जो अपनी चादर से दो इंच भीतर पैर रखता है, उसका बुढ़ापा किसी के आगे हाथ नहीं फैलाता।”",
+      en: "💰 Elders' Financial Discipline Rule: As our 87-year-old retired teacher father teaches: 'Modest income never makes one poor; unplanned show-off creates debt. Living two inches within your blanket and saving on the 1st of every month guarantees dignity in old age.'"
+    },
+    {
+      keywords: ["health", "medicine", "diet", "food", "exercise", "सेहत", "स्वास्थ्य", "दवाई", "भोजन", "व्यायाम", "ईजा"],
+      hi: "🌿 बुजुर्गों की सेहत का राज: 80 वर्षीय पूज्य ईजा और पिताजी के अनुसार— बबियाड़ के पहाड़ों जैसी पैदल दिनचर्या, सुबह की धूप, घर का सादा भोजन और परिवार के साथ बैठकर दो मीठे बोल ही 80 की उम्र के बाद सबसे बड़ी दवाई है।",
+      en: "🌿 Longevity & Health Secret After 80: According to our 80-year-old Eja and 87-year-old father: daily walking routines inspired by the hills of Babiyar, morning sunlight, simple home-cooked meals, and joyful time with grandchildren are the greatest medicine."
+    },
+    {
+      keywords: ["babiyar", "nainital", "chorgaliya", "village", "roots", "trust", "बबियाड़", "नैनीताल", "चोरगलिया", "जन्मभूमि", "ट्रस्ट", "गाँव"],
+      hi: "🏔️ जन्मभूमि ग्राम बबियाड़ (Babiyar) एवं ट्रस्ट: नैनीताल (उत्तराखंड) का पैतृक गाँव 'बबियाड़' और चोरगलिया हमारे संस्कारों की नींव है। 'बरगद सहारा फाउंडेशन एंड ट्रस्ट' मीडिया, सुनहरी डायरी प्रकाशन और बुजुर्ग सेवा शिविरों के माध्यम से कार्य करता है।",
+      en: "🏔️ Birthplace Village Babiyar & Trust: Village Babiyar and Chorgaliya in Nainital (Uttarakhand) are the foundation of our values. Bargad Sahara Group & Trust operates across Media, Sunehri Diary Publications, and Senior Citizen Care Camps."
+    },
+    {
+      keywords: ["vlog", "video", "youtube", "episode", "camera", "sony", "व्लॉग", "वीडियो", "यूट्यूब", "एपिसोड", "कैमरा", "सोनी"],
+      hi: "🎬 यूट्यूब व्लॉग्स (@BargadSahara): एपिसोड #01 में गाज़ियाबाद स्टेशन पर पिताजी का आगमन, नन्हे खरगोश से स्वागत, 'सोने की थाली' और रात्रि श्लोक ('कृष्णाय वासुदेवाय') है। एपिसोड #02 में सुबह की बारिश, पिताजी की संध्या-पूजा और 20 साल पुराने Sony कैमरों से शूटिंग शामिल है।",
+      en: "🎬 YouTube Vlogs (@BargadSahara): Episode #01 captures our 87-year-old father's arrival at Ghaziabad station, welcome with a baby rabbit, dinner in the brass 'Sone Ki Thali', and bedtime prayers. Episode #02 features morning rain blessings, prayers, and filming with 20-year-old vintage Sony cameras."
+    }
+  ];
+
+  function getLanguage() {
+    try {
+      const l = localStorage.getItem(LANG_PREF_KEY);
+      return l === "en" ? "en" : "hi";
+    } catch (e) {
+      return "hi";
+    }
+  }
+
+  function setLanguage(lang) {
+    const clean = lang === "en" ? "en" : "hi";
+    try {
+      localStorage.setItem(LANG_PREF_KEY, clean);
+    } catch (e) {}
+    if (syncChannel) syncChannel.postMessage({ type: "LANG_CHANGED", lang: clean });
+    return clean;
+  }
+
+  function detectClientEnv() {
+    const ua = (global.navigator && global.navigator.userAgent) || "";
+    const isMobile = /Mobile|Android|iPhone|iPad|iPod/i.test(ua);
+    let browser = "Web Browser";
+    if (/Edg\//i.test(ua)) browser = "Microsoft Edge";
+    else if (/Chrome\//i.test(ua)) browser = isMobile ? "Chrome Mobile" : "Google Chrome";
+    else if (/Safari\//i.test(ua) && !/Chrome\//i.test(ua)) browser = isMobile ? "Safari iOS" : "Apple Safari";
+    else if (/Firefox\//i.test(ua)) browser = "Mozilla Firefox";
+
+    let tz = "Asia/Kolkata";
+    try {
+      tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata";
+    } catch (e) {}
+
+    let city = "Noida / Delhi NCR";
+    let region = "India";
+    let country = "India (IN)";
+    if (tz && !tz.includes("Kolkata") && !tz.includes("Calcutta")) {
+      const parts = tz.split("/");
+      city = (parts[1] || parts[0] || "Global").replace(/_/g, " ");
+      region = parts[0] || "International";
+      country = parts[0] || "Global";
+    }
+    return { device: isMobile ? "Mobile" : "Desktop", browser, timezone: tz, city, region, country, userAgent: ua };
+  }
+
+  function getLocalHitsList() {
+    const map = new Map();
+    for (const s of INITIAL_ANALYTICS_SEEDS) {
+      map.set(s.id, { ...s });
+    }
+    try {
+      const saved = JSON.parse(localStorage.getItem(VISITOR_HITS_KEY) || "[]");
+      if (Array.isArray(saved)) {
+        for (const h of saved) {
+          if (h && h.id) map.set(h.id, h);
+        }
+      }
+    } catch (e) {}
+    return Array.from(map.values()).sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+  }
+
+  function summarizeHitsList(hits) {
+    const locMap = new Map();
+    let mobileCount = 0;
+    let desktopCount = 0;
+    let hiCount = 0;
+    let enCount = 0;
+
+    for (const h of hits) {
+      if (h.device === "Mobile") mobileCount++;
+      else desktopCount++;
+
+      if (h.lang === "en") enCount++;
+      else hiCount++;
+
+      const locKey = `${h.city || "Noida"}, ${h.region || "India"} (${h.country || "IN"})`;
+      const prev = locMap.get(locKey) || {
+        location: locKey,
+        city: h.city || "Noida",
+        region: h.region || "India",
+        country: h.country || "India (IN)",
+        count: 0,
+        lastVisit: h.timestamp,
+      };
+      prev.count++;
+      if (new Date(h.timestamp || 0) > new Date(prev.lastVisit || 0)) {
+        prev.lastVisit = h.timestamp;
+      }
+      locMap.set(locKey, prev);
+    }
+
+    const locations = Array.from(locMap.values()).sort((a, b) => b.count - a.count);
+    return {
+      totalHits: hits.length,
+      uniqueLocations: locations.length,
+      mobileCount,
+      desktopCount,
+      hiCount,
+      enCount,
+      locations,
+      recentHits: hits.slice(0, 50),
+    };
+  }
+
+  async function recordVisitorHit(pageName) {
+    const env = detectClientEnv();
+    const lang = getLanguage();
+    const hit = {
+      id: `HIT-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      city: env.city,
+      region: env.region,
+      country: env.country,
+      device: env.device,
+      browser: env.browser,
+      timezone: env.timezone,
+      lang,
+      page: pageName || "मुख्य पृष्ठ (Home)",
+      timestamp: new Date().toISOString(),
+    };
+
+    try {
+      const current = getLocalHitsList();
+      current.unshift(hit);
+      localStorage.setItem(VISITOR_HITS_KEY, JSON.stringify(current.slice(0, 300)));
+    } catch (e) {}
+
+    const mongoCfg = getMongoSettings();
+    try {
+      const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+      if (ctrl) setTimeout(() => ctrl.abort(), 3500);
+      const res = await fetch("/api/analytics", {
+        signal: ctrl ? ctrl.signal : undefined,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-mongo-user": mongoCfg.dbUser,
+          "x-mongo-pass": mongoCfg.dbPass,
+        },
+        body: JSON.stringify(hit),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.recorded && data.recorded.city) {
+          hit.city = data.recorded.city;
+          hit.region = data.recorded.region;
+          hit.country = data.recorded.country;
+        }
+      }
+    } catch (e) {}
+
+    return hit;
+  }
+
+  async function getAnalyticsSummary() {
+    const localHits = getLocalHitsList();
+    const mongoCfg = getMongoSettings();
+    try {
+      const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+      if (ctrl) setTimeout(() => ctrl.abort(), 4000);
+      const res = await fetch("/api/analytics", {
+        signal: ctrl ? ctrl.signal : undefined,
+        headers: {
+          "x-mongo-user": mongoCfg.dbUser,
+          "x-mongo-pass": mongoCfg.dbPass,
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.recentHits)) {
+          const map = new Map();
+          for (const h of [...data.recentHits, ...localHits]) {
+            if (h && h.id) map.set(h.id, h);
+          }
+          return summarizeHitsList(Array.from(map.values()));
+        }
+      }
+    } catch (e) {}
+    return summarizeHitsList(localHits);
+  }
+
+  async function askBargadAI({ message, lang, translateMode = false }) {
+    const activeLang = lang || getLanguage();
+    const q = String(message || "").trim();
+
+    try {
+      const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+      if (ctrl) setTimeout(() => ctrl.abort(), 4500);
+      const res = await fetch("/api/chat", {
+        signal: ctrl ? ctrl.signal : undefined,
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: q, lang: activeLang, translateMode }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.reply) {
+          return { ok: true, reply: data.reply, engine: data.engine || "bargad-ai", lang: activeLang };
+        }
+      }
+    } catch (e) {}
+
+    const lower = q.toLowerCase();
+    for (const entry of BARGAD_AI_KB) {
+      if (entry.keywords.some((kw) => lower.includes(kw))) {
+        const reply = translateMode
+          ? `${entry.hi}\n\n🌐 English Translation:\n${entry.en}`
+          : activeLang === "en"
+          ? entry.en
+          : entry.hi;
+        return { ok: true, reply, engine: "bargad-local-kb", lang: activeLang };
+      }
+    }
+
+    const fallbackHi = `🌳 नमस्कार! आपके प्रश्न ("${q}") के लिए धन्यवाद। बरगद सहारा (bargadsahara.com) ग्राम बबियाड़ (नैनीताल) की जड़ों से प्रेरित होकर 100 बुजुर्गों के 6,000 साल के अनुभव को 'सुनहरी डायरी' में सहेज रहा है। आप बचत के सूत्र, सेहत के राज या नवीनतम व्लॉग्स के बारे में पूछ सकते हैं!`;
+    const fallbackEn = `🌳 Namaskar! Thank you for asking ("${q}"). Bargad Sahara (bargadsahara.com) preserves 6,000 years of wisdom from 100 elders in the 'Sunehri Diary', rooted in Village Babiyar (Nainital). Feel free to ask about our Elders' Savings Rules, Longevity Secrets, or YouTube Vlogs!`;
+
+    return {
+      ok: true,
+      reply: translateMode ? `${fallbackHi}\n\n🌐 English Translation:\n${fallbackEn}` : activeLang === "en" ? fallbackEn : fallbackHi,
+      engine: "bargad-local-kb",
+      lang: activeLang,
+    };
   }
 
   function compressImageFile(file, maxWidth = 1080, quality = 0.82) {
@@ -594,10 +1280,20 @@
     loginAdmin,
     getAdminSession,
     setAdminSession,
+    getUsers,
+    addUser,
+    removeUser,
+    toggleUserStatus,
+    changePassword,
     adminSaveItem,
     adminDeleteItem,
     getMongoSettings,
     saveMongoSettings,
+    getLanguage,
+    setLanguage,
+    recordVisitorHit,
+    getAnalyticsSummary,
+    askBargadAI,
     compressImageFile,
     onSync: (callback) => {
       if (syncChannel) {
